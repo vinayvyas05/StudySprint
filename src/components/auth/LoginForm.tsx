@@ -1,4 +1,4 @@
-// components/auth/RegisterForm.tsx
+// components/auth/LoginForm.tsx
 
 import { useState } from "react";
 import {
@@ -10,42 +10,24 @@ import {
 } from "react-native";
 import { router } from "expo-router";
 
-export default function RegisterForm() {
-  const [name, setName] = useState("");
+export default function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
 
-  const handleSubmit = () => {
-    if (!name || !email || !password || !confirmPassword) {
-      alert("Please fill all fields");
-      return;
-    }
-
-    if (password !== confirmPassword) {
-      alert("Passwords do not match");
-      return;
-    }
-
+  const handleLogin = async () => {
     console.log({
-      name,
       email,
       password,
     });
 
-    // Firebase register logic here
+    // Firebase Login Logic Here
+
+    // router.replace("/home");
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.heading}>Create Account</Text>
-
-      <TextInput
-        style={styles.input}
-        placeholder="Full Name"
-        value={name}
-        onChangeText={setName}
-      />
+      <Text style={styles.heading}>Welcome Back</Text>
 
       <TextInput
         style={styles.input}
@@ -64,20 +46,19 @@ export default function RegisterForm() {
         onChangeText={setPassword}
       />
 
-      <TextInput
-        style={styles.input}
-        placeholder="Confirm Password"
-        secureTextEntry
-        value={confirmPassword}
-        onChangeText={setConfirmPassword}
-      />
-
-      <TouchableOpacity style={styles.button} onPress={handleSubmit}>
-        <Text style={styles.buttonText}>Register</Text>
+      <TouchableOpacity
+        style={styles.button}
+        onPress={handleLogin}
+      >
+        <Text style={styles.buttonText}>Login</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity onPress={() => router.push("/login")}>
-        <Text style={styles.link}>Already have an account? Login</Text>
+      <TouchableOpacity
+        onPress={() => router.push("/register")}
+      >
+        <Text style={styles.link}>
+          Don't have an account? Register
+        </Text>
       </TouchableOpacity>
     </View>
   );
@@ -108,11 +89,10 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     borderRadius: 12,
     alignItems: "center",
-    marginTop: 8,
   },
 
   buttonText: {
-    color: "#FFFFFF",
+    color: "#fff",
     fontSize: 16,
     fontWeight: "600",
   },
