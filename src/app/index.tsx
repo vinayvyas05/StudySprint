@@ -35,12 +35,16 @@ export default function HomeScreen() {
         <ThemedView style={styles.heroSection}>
           <AnimatedIcon />
           <ThemedText type="title" style={styles.title}>
-            Welcome to&nbsp;Expo
+            Hello, welcome to StudySprint!
           </ThemedText>
         </ThemedView>
 
         <ThemedText type="code" style={styles.code}>
           get started
+        </ThemedText>
+        <ThemedText type="small" style={{ textAlign: 'center' }}>
+          we are building an application for studnts
+        
         </ThemedText>
 
         <ThemedView type="backgroundElement" style={styles.stepContainer}>
