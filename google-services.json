@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1039976772413",
+    "project_id": "studysprint-7fd4e",
+    "storage_bucket": "studysprint-7fd4e.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1039976772413:android:0f5ba99c85c0d601078b54",
+        "android_client_info": {
+          "package_name": "com.rvTechSol.studysprint"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAeAknDSnzHsaL-n_LNNI3QrHf0-RAjHg4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
