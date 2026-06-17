@@ -2,12 +2,19 @@
 
 import LoginForm from "@/components/auth/LoginForm";
 import { StyleSheet, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function LoginScreen() {
   return (
-    <View style={styles.container}>
+    <SafeAreaView
+      style={{
+        flex: 1,
+        justifyContent: "center",
+        padding: 24,
+      }}
+    >
       <LoginForm />
-    </View>
+    </SafeAreaView>
   );
 }
 

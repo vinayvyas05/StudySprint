@@ -11,6 +11,9 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { doc, setDoc } from "firebase/firestore";
+import { db } from "@/config/firebase";
+import { registerUser } from "../../services/auth.service";
 
 export default function RegisterForm() {
   const [name, setName] = useState("");
@@ -19,27 +22,28 @@ export default function RegisterForm() {
   const [confirmPassword, setConfirmPassword] = useState("");
 
   const handleSubmit = async () => {
-    if (!name || !email || !password || !confirmPassword) {
-      alert("Please fill all fields");
-      return;
-    }
+  if (!name || !email || !password || !confirmPassword) {
+    alert("Please fill all fields");
+    return;
+  }
 
-    if (password !== confirmPassword) {
-      alert("Passwords do not match");
-      return;
-    }
+  if (password !== confirmPassword) {
+    alert("Passwords do not match");
+    return;
+  }
 
-    try {
-      // Create user in Firebase
-      await createUserWithEmailAndPassword(auth, email, password);
-      console.log("Registration successful");
-      // Navigate to home or login page
-      router.replace("/home");
-    } catch (error: any) {
-      console.error("Error registering:", error);
-      alert(error.message || "Registration failed");
-    }
-  };
+  try {
+    await registerUser({
+      name,
+      email,
+      password,
+    });
+
+    router.replace("/home");
+  } catch (error: any) {
+    alert(error.message);
+  }
+};
 
   return (
     <View style={styles.container}>
