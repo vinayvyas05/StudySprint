@@ -1,14 +1,16 @@
 // components/auth/RegisterForm.tsx
 
+import { auth } from "@/config/firebase";
+import { router } from "expo-router";
+import { createUserWithEmailAndPassword } from "firebase/auth";
 import { useState } from "react";
 import {
-  View,
+  StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
-  StyleSheet,
+  View,
 } from "react-native";
-import { router } from "expo-router";
 
 export default function RegisterForm() {
   const [name, setName] = useState("");
@@ -16,7 +18,7 @@ export default function RegisterForm() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!name || !email || !password || !confirmPassword) {
       alert("Please fill all fields");
       return;
@@ -27,13 +29,16 @@ export default function RegisterForm() {
       return;
     }
 
-    console.log({
-      name,
-      email,
-      password,
-    });
-
-    // Firebase register logic here
+    try {
+      // Create user in Firebase
+      await createUserWithEmailAndPassword(auth, email, password);
+      console.log("Registration successful");
+      // Navigate to home or login page
+      router.replace("/home");
+    } catch (error: any) {
+      console.error("Error registering:", error);
+      alert(error.message || "Registration failed");
+    }
   };
 
   return (

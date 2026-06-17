@@ -1,7 +1,7 @@
 // app/(auth)/login.tsx
 
-import { View, StyleSheet } from "react-native";
 import LoginForm from "@/components/auth/LoginForm";
+import { StyleSheet, View } from "react-native";
 
 export default function LoginScreen() {
   return (

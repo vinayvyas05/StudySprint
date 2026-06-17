@@ -1,14 +1,16 @@
 // components/auth/LoginForm.tsx
 
+import { auth } from "@/config/firebase";
+import { router } from "expo-router";
+import { signInWithEmailAndPassword } from "firebase/auth";
 import { useState } from "react";
 import {
-  View,
+  StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
-  StyleSheet,
+  View,
 } from "react-native";
-import { router } from "expo-router";
 
 export default function LoginForm() {
   const [email, setEmail] = useState("");
@@ -19,10 +21,14 @@ export default function LoginForm() {
       email,
       password,
     });
-
-    // Firebase Login Logic Here
-
-    // router.replace("/home");
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+      // Navigate to home after successful login
+      router.replace("/home");
+    } catch (error: any) {
+      console.error("Error logging in:", error);
+      alert(error.message || "Login failed");
+    }
   };
 
   return (
@@ -46,19 +52,12 @@ export default function LoginForm() {
         onChangeText={setPassword}
       />
 
-      <TouchableOpacity
-        style={styles.button}
-        onPress={handleLogin}
-      >
+      <TouchableOpacity style={styles.button} onPress={handleLogin}>
         <Text style={styles.buttonText}>Login</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity
-        onPress={() => router.push("/register")}
-      >
-        <Text style={styles.link}>
-          Don't have an account? Register
-        </Text>
+      <TouchableOpacity onPress={() => router.push("/register")}>
+        <Text style={styles.link}>Don't have an account? Register</Text>
       </TouchableOpacity>
     </View>
   );
