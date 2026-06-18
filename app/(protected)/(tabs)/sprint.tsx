@@ -1,8 +1,9 @@
-import { SafeAreaView, View, StyleSheet } from "react-native";
+import { View, StyleSheet } from "react-native";
 import CircularTimer from "@/components/sprint/CircularTimer";
 import SessionSelector from "@/components/sprint/SessionSelector";
 import { useState } from "react";
 import StartButton from "@/components/sprint/StartButton";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function SprintScreen() {
   const [selectedDuration, setSelectedDuration] = useState(25);
