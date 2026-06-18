@@ -9,7 +9,7 @@ export default function AuthLayout() {
   }
 
   if (user) {
-    return <Redirect href="/home" />;
+    return <Redirect href="/sprint" />;
   }
 
   return (
@@ -20,3 +20,4 @@ export default function AuthLayout() {
     />
   );
 }
+// app/(auth)/_layout.tsx

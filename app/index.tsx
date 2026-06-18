@@ -10,7 +10,7 @@ export default function Index() {
     user,
     authLoading,
   });
-  return user ? <Redirect href="/home" /> : <Redirect href="/login" />;
+  return user ? <Redirect href="/sprint" /> : <Redirect href="/login" />;
 }
 
 const styles = StyleSheet.create({

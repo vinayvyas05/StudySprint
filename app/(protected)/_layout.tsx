@@ -20,3 +20,4 @@ export default function ProtectedLayout() {
     />
   );
 }
+// app/(protected)/_layout.tsx

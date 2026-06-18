@@ -1,12 +1,11 @@
 import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
 import React from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { logoutUser } from "@/services/auth.service";
-import { router } from "expo-router";
 import { useAuthStore } from "@/store/auth.store";
 
-export default function home() {
+export default function Home() {
   const logout = useAuthStore((state) => state.logout);
+
   const handleLogOut = async () => {
     try {
       await logout();
@@ -15,11 +14,13 @@ export default function home() {
       console.error(error);
     }
   };
+
   return (
-    <SafeAreaView>
+    <SafeAreaView style={{ flex: 1 }}>
       <View>
-        <Text>home</Text>
+        <Text>Home</Text>
       </View>
+
       <TouchableOpacity onPress={handleLogOut}>
         <Text>Logout</Text>
       </TouchableOpacity>
