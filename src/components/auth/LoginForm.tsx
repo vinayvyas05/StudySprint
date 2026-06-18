@@ -1,5 +1,5 @@
 // components/auth/LoginForm.tsx
-
+import { useAuthStore } from "@/store/auth.store";
 import { auth } from "@/config/firebase";
 import { router } from "expo-router";
 import { signInWithEmailAndPassword } from "firebase/auth";
@@ -13,21 +13,21 @@ import {
 } from "react-native";
 
 export default function LoginForm() {
+  const login = useAuthStore((state) => state.login);
+  const loading = useAuthStore((state) => state.loading);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const handleLogin = async () => {
-    console.log({
-      email,
-      password,
-    });
     try {
-      await signInWithEmailAndPassword(auth, email, password);
-      // Navigate to home after successful login
-      router.replace("/home");
+      await login({
+        email,
+        password,
+      });
     } catch (error: any) {
-      console.error("Error logging in:", error);
-      alert(error.message || "Login failed");
+      console.error(error);
+
+      alert(error?.message || "Login failed");
     }
   };
 
@@ -52,8 +52,14 @@ export default function LoginForm() {
         onChangeText={setPassword}
       />
 
-      <TouchableOpacity style={styles.button} onPress={handleLogin}>
-        <Text style={styles.buttonText}>Login</Text>
+      <TouchableOpacity
+        style={styles.button}
+        onPress={handleLogin}
+        disabled={loading}
+      >
+        <Text style={styles.buttonText}>
+          {loading ? "Logging in..." : "Login"}
+        </Text>
       </TouchableOpacity>
 
       <TouchableOpacity onPress={() => router.push("/register")}>

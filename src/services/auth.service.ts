@@ -8,18 +8,18 @@ import {
 } from "firebase/auth";
 
 import { doc, setDoc, getDoc } from "firebase/firestore";
+import type {
+  LoginUserPayload,
+  RegisterUserPayload,
+} from "../types/auth.types";
+import type {User} from "firebase/auth";
+import { UserProfile } from "@/types/user.types";
 
-interface RegisterUserPayload {
-  name: string;
-  email: string;
-  password: string;
-}
-
-export async function registerUser({
+export const registerUser = async ({
   name,
   email,
   password,
-}: RegisterUserPayload) {
+}: RegisterUserPayload): Promise<User> => {
   const userCredential = await createUserWithEmailAndPassword(
     auth,
     email,
@@ -31,8 +31,6 @@ export async function registerUser({
   await updateProfile(user, {
     displayName: name,
   });
-
-  console.log("Before Firestore");
 
   await setDoc(doc(db, "users", user.uid), {
     uid: user.uid,
@@ -52,30 +50,40 @@ export async function registerUser({
     createdAt: new Date().toISOString(),
   });
 
-  console.log("After Firestore");
 
   return user;
-}
+};
 
-export const loginUser = async (email: string, password: string) => {
+export const loginUser = async ({ email, password }: LoginUserPayload): Promise<{
+  firebaseUser: User;
+  profile: UserProfile;
+}> => {
   const userCredential = await signInWithEmailAndPassword(
     auth,
     email,
     password,
   );
 
-  console.log(userCredential.user);
-
   const userDoc = await getDoc(doc(db, "users", userCredential.user.uid));
 
   return {
     firebaseUser: userCredential.user,
-    profile: userDoc.data(),
+    profile: userDoc.data() as UserProfile,
   };
 };
 
 export const logoutUser = async () => {
-  console.log("Before logout", auth.currentUser);
   await signOut(auth);
-  console.log("After logout", auth.currentUser);
+};
+
+export const getUserProfile = async (uid: string): Promise<UserProfile> => {
+  const docRef = doc(db, "users", uid);
+
+  const snapshot = await getDoc(docRef);
+
+  if (!snapshot.exists()) {
+    throw new Error("User profile not found");
+  }
+
+  return snapshot.data() as UserProfile;
 };

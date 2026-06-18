@@ -1,5 +1,5 @@
 // components/auth/RegisterForm.tsx
-
+import { useAuthStore } from "@/store/auth.store";
 import { auth } from "@/config/firebase";
 import { router } from "expo-router";
 import { createUserWithEmailAndPassword } from "firebase/auth";
@@ -16,34 +16,34 @@ import { db } from "@/config/firebase";
 import { registerUser } from "../../services/auth.service";
 
 export default function RegisterForm() {
+  const register = useAuthStore((state) => state.register);
+  const loading = useAuthStore((state) => state.loading);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
   const handleSubmit = async () => {
-  if (!name || !email || !password || !confirmPassword) {
-    alert("Please fill all fields");
-    return;
-  }
+    if (!name || !email || !password || !confirmPassword) {
+      alert("Please fill all fields");
+      return;
+    }
 
-  if (password !== confirmPassword) {
-    alert("Passwords do not match");
-    return;
-  }
+    if (password !== confirmPassword) {
+      alert("Passwords do not match");
+      return;
+    }
 
-  try {
-    await registerUser({
-      name,
-      email,
-      password,
-    });
-
-    router.replace("/home");
-  } catch (error: any) {
-    alert(error.message);
-  }
-};
+    try {
+      await register({
+        name,
+        email,
+        password,
+      });
+    } catch (error: any) {
+      alert(error?.message || "Registration failed");
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -81,8 +81,14 @@ export default function RegisterForm() {
         onChangeText={setConfirmPassword}
       />
 
-      <TouchableOpacity style={styles.button} onPress={handleSubmit}>
-        <Text style={styles.buttonText}>Register</Text>
+      <TouchableOpacity
+        style={styles.button}
+        onPress={handleSubmit}
+        disabled={loading}
+      >
+        <Text style={styles.buttonText}>
+          {loading ? "Creating Account..." : "Register"}
+        </Text>
       </TouchableOpacity>
 
       <TouchableOpacity onPress={() => router.push("/login")}>
