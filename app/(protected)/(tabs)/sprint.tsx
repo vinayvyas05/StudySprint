@@ -1,20 +1,25 @@
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet, Text } from "react-native";
 import CircularTimer from "@/components/sprint/CircularTimer";
 import SessionSelector from "@/components/sprint/SessionSelector";
 import { useState, useEffect } from "react";
 import StartButton from "@/components/sprint/StartButton";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+type Phase = "focus" | "shortBreak" | "longBreak";
 export default function SprintScreen() {
   const [selectedDuration, setSelectedDuration] = useState(25);
   const [timeLeft, setTimeLeft] = useState(25 * 60);
   const [isRunning, setIsRunning] = useState(false);
 
+  const [currentPhase, setCurrentPhase] = useState<Phase>("focus");
+  const [currentCycle, setCurrentCycle] = useState(1);
+
   // reset when duration changes
   useEffect(() => {
-    setTimeLeft(selectedDuration * 60);
-    setIsRunning(false);
-  }, [selectedDuration]);
+    if (!isRunning && currentPhase === "focus") {
+      setTimeLeft(selectedDuration * 60);
+    }
+  }, [selectedDuration, isRunning, currentPhase]);
 
   // timer engine
   useEffect(() => {
@@ -27,21 +32,57 @@ export default function SprintScreen() {
     }
 
     if (timeLeft === 0) {
-      setIsRunning(false);
-      console.log("Session Completed");
-      // later: XP update trigger
+      // Focus finished
+      if (currentPhase === "focus") {
+        if (currentCycle === 4) {
+          setCurrentPhase("longBreak");
+          setTimeLeft(20 * 60);
+        } else {
+          setCurrentPhase("shortBreak");
+          setTimeLeft(5 * 60);
+        }
+      }
+
+      // Short break finished
+      else if (currentPhase === "shortBreak") {
+        setCurrentCycle((prev) => prev + 1);
+
+        setCurrentPhase("focus");
+        setTimeLeft(selectedDuration * 60);
+      }
+
+      // Long break finished
+      else if (currentPhase === "longBreak") {
+        setIsRunning(false);
+
+        console.log("Sprint Completed");
+      }
     }
 
     return () => clearInterval(interval);
-  }, [isRunning, timeLeft]);
+  }, [isRunning, timeLeft, currentPhase, currentCycle, selectedDuration]);
 
   const resetTimer = () => {
     setIsRunning(false);
+
+    setCurrentPhase("focus");
+    setCurrentCycle(1);
+
     setTimeLeft(selectedDuration * 60);
   };
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.top} />
+
+      <View style={styles.headerInfo}>
+        <Text style={styles.cycleText}>Cycle {currentCycle}/4</Text>
+
+        <Text style={styles.phaseText}>
+          {currentPhase === "focus" && "Focus Time"}
+          {currentPhase === "shortBreak" && "Short Break"}
+          {currentPhase === "longBreak" && "Long Break"}
+        </Text>
+      </View>
 
       <View style={styles.timerSection}>
         <CircularTimer timeLeft={timeLeft} />
@@ -58,6 +99,7 @@ export default function SprintScreen() {
         <SessionSelector
           selected={selectedDuration}
           setSelected={setSelectedDuration}
+          disabled={isRunning}
         />
       </View>
     </SafeAreaView>
@@ -69,7 +111,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   top: {
-    height: 80,
+    height: 50,
     justifyContent: "center",
     paddingHorizontal: 16,
   },
@@ -78,6 +120,23 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   bottom: {
-    height: 120,
+    height: 90,
+  },
+  headerInfo: {
+    alignItems: "center",
+    marginBottom: 24,
+  },
+
+  cycleText: {
+    fontSize: 14,
+    fontWeight: "500",
+    color: "#6B7280",
+    marginBottom: 6,
+  },
+
+  phaseText: {
+    fontSize: 24,
+    fontWeight: "700",
+    color: "#111827",
   },
 });
