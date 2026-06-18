@@ -1,9 +1,19 @@
 import { View, Text, StyleSheet } from "react-native";
 
-export default function CircularTimer() {
+export default function CircularTimer({
+  timeLeft,
+}: {
+  timeLeft: number;
+}) {
+  const minutes = Math.floor(timeLeft / 60);
+  const seconds = timeLeft % 60;
+
   return (
     <View style={styles.container}>
-      <Text style={styles.time}>25:00</Text>
+      <Text style={styles.time}>
+        {minutes}:{seconds < 10 ? "0" : ""}
+        {seconds}
+      </Text>
     </View>
   );
 }
@@ -23,4 +33,3 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
 });
-

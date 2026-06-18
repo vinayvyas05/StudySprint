@@ -4,22 +4,24 @@ type Props = {
   isRunning: boolean;
   onStart: () => void;
   onPause: () => void;
+  onReset: () => void;
 };
 
-export default function StartButton({
-  isRunning,
-  onStart,
-  onPause,
-}: Props) {
+export default function StartButton({ isRunning, onStart, onPause, onReset }: Props) {
   return (
     <View style={styles.container}>
       <TouchableOpacity
         style={styles.button}
         onPress={isRunning ? onPause : onStart}
       >
-        <Text style={styles.text}>
-          {isRunning ? "Pause" : "Start Sprint"}
-        </Text>
+        <Text style={styles.text}>{isRunning ? "Pause" : "Start Sprint"}</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={[styles.button, styles.resetButton]}
+        onPress={onReset}
+      >
+        <Text style={styles.text}>Reset</Text>
       </TouchableOpacity>
     </View>
   );
@@ -40,4 +42,8 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontWeight: "600",
   },
+  resetButton: {
+  marginTop: 10,
+  backgroundColor: "#444",
+},
 });
