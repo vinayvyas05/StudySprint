@@ -1,100 +1,84 @@
 import { View, StyleSheet, Text } from "react-native";
 import CircularTimer from "@/components/sprint/CircularTimer";
 import SessionSelector from "@/components/sprint/SessionSelector";
-import { useState, useEffect } from "react";
 import StartButton from "@/components/sprint/StartButton";
+import { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import { useAuthStore } from "@/store/auth.store";
+import { createSession, updateUserStats } from "@/services/session.service";
+
+import { usePomodoroTimer } from "@/hooks/usePomodoroTimer";
+
 type Phase = "focus" | "shortBreak" | "longBreak";
+
 export default function SprintScreen() {
-  const [selectedDuration, setSelectedDuration] = useState(25);
-  const [timeLeft, setTimeLeft] = useState(25 * 60);
-  const [isRunning, setIsRunning] = useState(false);
+  const user = useAuthStore((state) => state.user);
 
-  const [currentPhase, setCurrentPhase] = useState<Phase>("focus");
-  const [currentCycle, setCurrentCycle] = useState(1);
+  const [selectedDuration, setSelectedDuration] = useState(1); //after testing is done set it to 25
 
-  // reset when duration changes
-  useEffect(() => {
-    if (!isRunning && currentPhase === "focus") {
-      setTimeLeft(selectedDuration * 60);
-    }
-  }, [selectedDuration, isRunning, currentPhase]);
+  // 🔥 Firestore + XP logic stays here (clean separation)
+  const handleSprintComplete = async () => {
+    if (!user) return;
 
-  // timer engine
-  useEffect(() => {
-    let interval: ReturnType<typeof setInterval>;
+    const totalFocus = selectedDuration * 4;
 
-    if (isRunning && timeLeft > 0) {
-      interval = setInterval(() => {
-        setTimeLeft((prev) => prev - 1);
-      }, 1000);
-    }
+    await createSession({
+      userId: user.uid,
+      focusMinutes: totalFocus,
+      cyclesCompleted: 4,
+      durationType: selectedDuration,
+      startedAt: new Date().toISOString(),
+      completedAt: new Date().toISOString(),
+      createdAt: new Date().toISOString(),
+    });
 
-    if (timeLeft === 0) {
-      // Focus finished
-      if (currentPhase === "focus") {
-        if (currentCycle === 4) {
-          setCurrentPhase("longBreak");
-          setTimeLeft(20 * 60);
-        } else {
-          setCurrentPhase("shortBreak");
-          setTimeLeft(5 * 60);
-        }
-      }
-
-      // Short break finished
-      else if (currentPhase === "shortBreak") {
-        setCurrentCycle((prev) => prev + 1);
-
-        setCurrentPhase("focus");
-        setTimeLeft(selectedDuration * 60);
-      }
-
-      // Long break finished
-      else if (currentPhase === "longBreak") {
-        setIsRunning(false);
-
-        console.log("Sprint Completed");
-      }
-    }
-
-    return () => clearInterval(interval);
-  }, [isRunning, timeLeft, currentPhase, currentCycle, selectedDuration]);
-
-  const resetTimer = () => {
-    setIsRunning(false);
-
-    setCurrentPhase("focus");
-    setCurrentCycle(1);
-
-    setTimeLeft(selectedDuration * 60);
+    await updateUserStats(user.uid, totalFocus);
   };
+
+  // 🔥 Timer logic moved to hook
+  const {
+    timeLeft,
+    isRunning,
+    currentPhase,
+    currentCycle,
+    start,
+    pause,
+    reset,
+  } = usePomodoroTimer(selectedDuration, handleSprintComplete);
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.top} />
 
+      {/* Header */}
       <View style={styles.headerInfo}>
-        <Text style={styles.cycleText}>Cycle {currentCycle}/4</Text>
+        <Text style={styles.cycleText}>
+          Cycle {currentCycle}/4
+        </Text>
 
         <Text style={styles.phaseText}>
           {currentPhase === "focus" && "Focus Time"}
           {currentPhase === "shortBreak" && "Short Break"}
           {currentPhase === "longBreak" && "Long Break"}
+          {currentPhase === "completed" && "Sprint Complete 🎉"}
         </Text>
       </View>
 
+      {/* Timer */}
       <View style={styles.timerSection}>
         <CircularTimer timeLeft={timeLeft} />
       </View>
 
+      {/* Controls */}
       <StartButton
         isRunning={isRunning}
-        onStart={() => setIsRunning(true)}
-        onPause={() => setIsRunning(false)}
-        onReset={resetTimer}
+        onStart={start}
+        onPause={pause}
+        onReset={reset}
       />
 
+      {/* Session selector */}
       <View style={styles.bottom}>
         <SessionSelector
           selected={selectedDuration}
@@ -112,8 +96,21 @@ const styles = StyleSheet.create({
   },
   top: {
     height: 50,
-    justifyContent: "center",
-    paddingHorizontal: 16,
+  },
+  headerInfo: {
+    alignItems: "center",
+    marginBottom: 24,
+  },
+  cycleText: {
+    fontSize: 14,
+    fontWeight: "500",
+    color: "#6B7280",
+    marginBottom: 6,
+  },
+  phaseText: {
+    fontSize: 24,
+    fontWeight: "700",
+    color: "#111827",
   },
   timerSection: {
     flex: 1,
@@ -121,22 +118,5 @@ const styles = StyleSheet.create({
   },
   bottom: {
     height: 90,
-  },
-  headerInfo: {
-    alignItems: "center",
-    marginBottom: 24,
-  },
-
-  cycleText: {
-    fontSize: 14,
-    fontWeight: "500",
-    color: "#6B7280",
-    marginBottom: 6,
-  },
-
-  phaseText: {
-    fontSize: 24,
-    fontWeight: "700",
-    color: "#111827",
   },
 });

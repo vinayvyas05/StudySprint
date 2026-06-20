@@ -7,7 +7,7 @@ import {
   signOut,
 } from "firebase/auth";
 
-import { doc, setDoc, getDoc } from "firebase/firestore";
+import { doc, setDoc, getDoc, serverTimestamp } from "firebase/firestore";
 import type {
   LoginUserPayload,
   RegisterUserPayload,
@@ -47,7 +47,7 @@ export const registerUser = async ({
     totalFocusMinutes: 0,
     totalSessions: 0,
 
-    createdAt: new Date().toISOString(),
+    createdAt: serverTimestamp(),
   });
 
 

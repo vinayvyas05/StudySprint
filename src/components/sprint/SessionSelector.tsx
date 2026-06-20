@@ -17,6 +17,7 @@ export default function SessionSelector({
     <View style={styles.container}>
       {options.map((time) => (
         <TouchableOpacity
+          key={time}
           disabled={disabled}
           style={[
             styles.option,
@@ -63,6 +64,6 @@ const styles = StyleSheet.create({
     color: "#fff",
   },
   disabledOption: {
-  opacity: 0.4,
-},
+    opacity: 0.4,
+  },
 });
