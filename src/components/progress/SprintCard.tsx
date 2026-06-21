@@ -1,18 +1,41 @@
 import React, { memo } from "react";
-import { Card, Text } from "react-native-paper";
+import { StyleSheet } from "react-native";
+import {
+  Card,
+  Chip,
+  Text,
+} from "react-native-paper";
 
 function SprintCardComponent({
   session,
 }: any) {
+  const date = session.completedAt
+    ? new Date(
+        session.completedAt.seconds * 1000
+      ).toLocaleDateString()
+    : "";
+
   return (
-    <Card>
+    <Card style={styles.card}>
       <Card.Content>
-        <Text variant="titleMedium">
+        <Chip compact>
+          +{session.focusMinutes} XP
+        </Chip>
+
+        <Text
+          variant="titleMedium"
+          style={styles.title}
+        >
           {session.durationType}
         </Text>
 
-        <Text>
-          Focus: {session.focusMinutes} mins
+        <Text variant="bodyMedium">
+          Focus Time:{" "}
+          {session.focusMinutes} mins
+        </Text>
+
+        <Text variant="bodySmall">
+          {date}
         </Text>
       </Card.Content>
     </Card>
@@ -22,3 +45,15 @@ function SprintCardComponent({
 export const SprintCard = memo(
   SprintCardComponent
 );
+
+const styles = StyleSheet.create({
+  card: {
+    marginBottom: 12,
+    borderRadius: 18,
+  },
+
+  title: {
+    marginTop: 12,
+    marginBottom: 8,
+  },
+});

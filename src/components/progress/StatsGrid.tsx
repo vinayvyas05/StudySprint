@@ -5,30 +5,13 @@ import { StatCard } from "./StatCard";
 export function StatsGrid({ stats }: any) {
   return (
     <View style={styles.container}>
-      <StatCard
-        title="XP"
-        value={stats.xp}
-      />
+      <StatCard title="XP" value={stats.xp} icon="⚡" />
 
-      <StatCard
-        title="Focus"
-        value={stats.totalFocusMinutes}
-      />
+      <StatCard title="Focus" value={`${stats.totalFocusMinutes}m`} icon="🎯" />
 
-      <StatCard
-        title="Sessions"
-        value={stats.totalSessions}
-      />
+      <StatCard title="Sessions" value={stats.totalSessions} icon="🏆" />
 
-      <StatCard
-        title="Current Streak"
-        value={stats.currentStreak}
-      />
-
-      <StatCard
-        title="Longest Streak"
-        value={stats.longestStreak}
-      />
+      <StatCard title="Streak" value={`${stats.currentStreak}`} icon="🔥" />
     </View>
   );
 }

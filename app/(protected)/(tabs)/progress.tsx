@@ -1,11 +1,45 @@
-import React from "react";
-import { Text } from "react-native";
+import { ScrollView, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-export default function sprint() {
+import { useEffect } from "react";
+
+import { useAuthStore } from "@/store/auth.store";
+import { useProgressStore } from "@/store/progress.store";
+
+import { StatsGrid } from "../../../src/components/progress/StatsGrid";
+import { RecentSprints } from "../../../src/components/progress/RecentSprints";
+import { LevelCard } from "../../../src/components/progress/LevelCard";
+
+export default function ProgressScreen() {
+  const user = useAuthStore((state) => state.user);
+
+  const { stats, sessions, loadProgress } = useProgressStore();
+
+  useEffect(() => {
+    if (!user?.uid) return;
+
+    loadProgress(user.uid);
+  }, [user?.uid]);
+
+  if (!stats) {
+    return null;
+  }
+
   return (
     <SafeAreaView>
-      <Text>Sprint</Text>
+      <ScrollView contentContainerStyle={styles.container}>
+        <LevelCard xp={stats.xp} level={stats.level} />
+        <StatsGrid stats={stats} />
+
+        <RecentSprints sessions={sessions} />
+      </ScrollView>
     </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    padding: 16,
+    gap: 16,
+  },
+});
