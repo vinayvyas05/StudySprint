@@ -1,4 +1,8 @@
-import { View, TouchableOpacity, Text, StyleSheet } from "react-native";
+import { StyleSheet, View } from "react-native";
+import { Button } from "react-native-paper";
+
+const ACCENT = "#6366F1";
+const TEXT_MUTED = "#64748B";
 
 type Props = {
   isRunning: boolean;
@@ -7,22 +11,40 @@ type Props = {
   onReset: () => void;
 };
 
-export default function StartButton({ isRunning, onStart, onPause, onReset }: Props) {
+export default function StartButton({
+  isRunning,
+  onStart,
+  onPause,
+  onReset,
+}: Props) {
   return (
     <View style={styles.container}>
-      <TouchableOpacity
-        style={styles.button}
+      {/* Primary action */}
+      <Button
+        mode="contained"
         onPress={isRunning ? onPause : onStart}
+        style={styles.primaryButton}
+        contentStyle={styles.primaryContent}
+        labelStyle={styles.primaryLabel}
+        buttonColor={ACCENT}
+        rippleColor="rgba(255,255,255,0.15)"
+        icon={isRunning ? "pause" : "play"}
       >
-        <Text style={styles.text}>{isRunning ? "Pause" : "Start Sprint"}</Text>
-      </TouchableOpacity>
+        {isRunning ? "Pause" : "Start Sprint"}
+      </Button>
 
-      <TouchableOpacity
-        style={[styles.button, styles.resetButton]}
+      {/* Reset — subtle text button */}
+      <Button
+        mode="text"
         onPress={onReset}
+        style={styles.resetButton}
+        labelStyle={styles.resetLabel}
+        textColor={TEXT_MUTED}
+        icon="refresh"
+        rippleColor="rgba(193,68,14,0.08)"
       >
-        <Text style={styles.text}>Reset</Text>
-      </TouchableOpacity>
+        Reset
+      </Button>
     </View>
   );
 }
@@ -30,20 +52,26 @@ export default function StartButton({ isRunning, onStart, onPause, onReset }: Pr
 const styles = StyleSheet.create({
   container: {
     alignItems: "center",
-    marginBottom: 30,
+    gap: 4,
+    marginBottom: 16,
   },
-  button: {
-    backgroundColor: "#111",
-    paddingVertical: 14,
-    paddingHorizontal: 40,
-    borderRadius: 30,
+  primaryButton: {
+    borderRadius: 18,
+    width: "90%",
   },
-  text: {
-    color: "#fff",
-    fontWeight: "600",
+  primaryContent: {
+    height: 58,
+  },
+  primaryLabel: {
+    fontSize: 17,
+    fontWeight: "700",
   },
   resetButton: {
-  marginTop: 10,
-  backgroundColor: "#444",
-},
+    borderRadius: 20,
+  },
+  resetLabel: {
+    fontSize: 13,
+    fontWeight: "500",
+    letterSpacing: 0.3,
+  },
 });

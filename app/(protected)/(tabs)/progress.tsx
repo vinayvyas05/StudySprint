@@ -39,7 +39,9 @@ export default function ProgressScreen() {
 
 const styles = StyleSheet.create({
   container: {
-    padding: 16,
-    gap: 16,
+    paddingHorizontal: 20,
+    paddingTop: 12,
+    paddingBottom: 32,
+    gap: 24,
   },
 });

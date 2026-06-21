@@ -6,8 +6,13 @@ interface Props {
   level: number;
 }
 
-export function LevelCard({ xp, level }: Props) {
-  const currentLevelXp = (level - 1) * 100;
+export function LevelCard({
+  xp,
+  level,
+}: Props) {
+  const currentLevelXp =
+    (level - 1) * 100;
+
   const nextLevelXp = level * 100;
 
   const progress =
@@ -16,55 +21,80 @@ export function LevelCard({ xp, level }: Props) {
 
   return (
     <Surface
-      elevation={3}
+      elevation={0}
       style={styles.container}
     >
-      <Text variant="titleMedium">
-        Study Sprint Level
+      <Text style={styles.badge}>
+        LEVEL {level}
       </Text>
 
-      <Text style={styles.level}>
-        Level {level}
+      <Text style={styles.xp}>
+        {xp}
       </Text>
 
-      <Text
-        variant="bodyMedium"
-        style={styles.xp}
-      >
-        {xp} XP
+      <Text style={styles.xpLabel}>
+        Total XP
       </Text>
 
       <ProgressBar
         progress={progress}
+        color="#FFFFFF"
         style={styles.progress}
       />
 
-      <Text variant="bodySmall">
-        {nextLevelXp - xp} XP until Level{" "}
-        {level + 1}
-      </Text>
+      <View style={styles.footer}>
+        <Text style={styles.footerText}>
+          {nextLevelXp - xp} XP to next
+          level
+        </Text>
+
+        <Text style={styles.footerText}>
+          Level {level + 1}
+        </Text>
+      </View>
     </Surface>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    borderRadius: 24,
+    backgroundColor: "#6366F1",
+    borderRadius: 32,
     padding: 24,
-    gap: 12,
   },
 
-  level: {
-    fontSize: 36,
+  badge: {
+    color: "#E0E7FF",
+    letterSpacing: 2,
     fontWeight: "700",
   },
 
   xp: {
-    opacity: 0.7,
+    color: "#FFF",
+    fontSize: 52,
+    fontWeight: "800",
+    marginTop: 12,
+  },
+
+  xpLabel: {
+    color: "#E0E7FF",
+    marginBottom: 24,
   },
 
   progress: {
     height: 10,
-    borderRadius: 20,
+    borderRadius: 999,
+    backgroundColor: "rgba(255,255,255,0.2)",
+  },
+
+  footer: {
+    marginTop: 16,
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+
+  footerText: {
+    color: "#E0E7FF",
+    fontSize: 13,
   },
 });

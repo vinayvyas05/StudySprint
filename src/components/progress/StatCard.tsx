@@ -1,6 +1,7 @@
 import React, { memo } from "react";
-import { StyleSheet } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { Card, Text } from "react-native-paper";
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 
 interface Props {
   title: string;
@@ -14,43 +15,60 @@ function StatCardComponent({
   icon,
 }: Props) {
   return (
-    <Card style={styles.card}>
-      <Card.Content>
-        <Text style={styles.icon}>
-          {icon}
-        </Text>
-
-        <Text variant="labelMedium">
-          {title}
-        </Text>
+    <Card style={styles.card} mode="contained">
+      <Card.Content style={styles.content}>
+        <View style={styles.iconContainer}>
+          <MaterialCommunityIcons
+            name={icon as any}
+            size={20}
+            color="#6366F1"
+          />
+        </View>
 
         <Text style={styles.value}>
           {value}
+        </Text>
+
+        <Text style={styles.label}>
+          {title}
         </Text>
       </Card.Content>
     </Card>
   );
 }
 
-export const StatCard = memo(
-  StatCardComponent
-);
+export const StatCard = memo(StatCardComponent);
 
 const styles = StyleSheet.create({
   card: {
     flex: 1,
     minWidth: "48%",
-    borderRadius: 20,
+    borderRadius: 28,
   },
 
-  icon: {
-    fontSize: 24,
-    marginBottom: 8,
+  content: {
+    alignItems: "center",
+    paddingVertical: 20,
+  },
+
+  iconContainer: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: "#EEF2FF",
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 14,
   },
 
   value: {
-    fontSize: 24,
-    fontWeight: "700",
+    fontSize: 32,
+    fontWeight: "800",
+  },
+
+  label: {
     marginTop: 4,
+    opacity: 0.6,
+    fontSize: 13,
   },
 });
