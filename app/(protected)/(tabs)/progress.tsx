@@ -194,8 +194,6 @@ const styles = StyleSheet.create({
     position: "absolute",
     width: "100%",
     height: "100%",
-    background:
-      "linear-gradient(135deg, #0a0e27 0%, #1a1a3e 25%, #2d1b4e 50%, #1a0a3e 75%, #0a0e27 100%)",
     backgroundColor: "#0a0e27",
     zIndex: 0,
   },

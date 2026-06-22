@@ -19,52 +19,57 @@ export function usePomodoroTimer(
     if (!isRunning && currentPhase === "focus") {
       setTimeLeft(selectedDuration * 60);
     }
-  }, [selectedDuration]);
+  }, [selectedDuration, isRunning, currentPhase]);
 
+  // Stable timer interval: only restarts when isRunning changes
   useEffect(() => {
-    let interval: ReturnType<typeof setInterval>;
+    if (!isRunning) return;
 
-    if (isRunning && timeLeft > 0) {
-      interval = setInterval(() => {
-        setTimeLeft((p) => p - 1);
-      }, 1000);
-    }
-
-    if (timeLeft === 0) {
-      // focus → break
-      if (currentPhase === "focus") {
-        if (currentCycle === 4) {
-          setCurrentPhase("longBreak");
-          // setTimeLeft(20 * 60); // correct login
-          setTimeLeft(5); // for testing purpose
-        } else {
-          setCurrentPhase("shortBreak");
-          // setTimeLeft(5 * 60); // correct logic
-          setTimeLeft(3);  // for testing purpose
+    const interval = setInterval(() => {
+      setTimeLeft((prev) => {
+        if (prev <= 1) {
+          return 0;
         }
-      }
-
-      // break → focus
-      else if (currentPhase === "shortBreak") {
-        setCurrentCycle((p) => p + 1);
-        setCurrentPhase("focus");
-        setTimeLeft(selectedDuration * 60);
-      }
-
-      // sprint complete
-      else if (currentPhase === "longBreak") {
-        setIsRunning(false);
-
-        if (!hasCompletedRef.current) {
-          hasCompletedRef.current = true;
-          onComplete();
-          setCurrentPhase("completed");
-        }
-      }
-    }
+        return prev - 1;
+      });
+    }, 1000);
 
     return () => clearInterval(interval);
-  }, [isRunning, timeLeft, currentPhase, currentCycle]);
+  }, [isRunning]);
+
+  // Handle phase transitions only when timeLeft hits 0
+  useEffect(() => {
+    if (timeLeft !== 0) return;
+
+    // focus → break
+    if (currentPhase === "focus") {
+      if (currentCycle === 4) {
+        setCurrentPhase("longBreak");
+        setTimeLeft(5); // for testing purpose
+      } else {
+        setCurrentPhase("shortBreak");
+        setTimeLeft(3);  // for testing purpose
+      }
+    }
+
+    // break → focus
+    else if (currentPhase === "shortBreak") {
+      setCurrentCycle((p) => p + 1);
+      setCurrentPhase("focus");
+      setTimeLeft(selectedDuration * 60);
+    }
+
+    // sprint complete
+    else if (currentPhase === "longBreak") {
+      setIsRunning(false);
+
+      if (!hasCompletedRef.current) {
+        hasCompletedRef.current = true;
+        onComplete();
+        setCurrentPhase("completed");
+      }
+    }
+  }, [timeLeft, currentPhase, currentCycle, selectedDuration, onComplete]);
 
   const start = () => {
     if (currentPhase === "completed") {
@@ -96,3 +101,4 @@ export function usePomodoroTimer(
     reset,
   };
 }
+

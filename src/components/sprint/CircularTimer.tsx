@@ -1,12 +1,15 @@
 import { useEffect, useRef } from "react";
-import { Animated, StyleSheet, Text, View } from "react-native";
+import { Animated, Text, View } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 
-// Design tokens
-const RING_COLOR = "#C1440E"; // burnt sienna / terracotta
-const RING_BG = "#FFF9F5"; // warm ivory inner face
-const TEXT_MAIN = "#1C1412"; // near-black warm
+interface Props {
+  timeLeft: number;
+  phaseColor: string;
+  phaseLabel: string;
+  isRunning: boolean;
+}
 
-export default function CircularTimer({ timeLeft }: { timeLeft: number }) {
+export default function CircularTimer({ timeLeft, phaseColor, phaseLabel, isRunning }: Props) {
   const minutes = Math.floor(timeLeft / 60);
   const seconds = timeLeft % 60;
 
@@ -16,13 +19,13 @@ export default function CircularTimer({ timeLeft }: { timeLeft: number }) {
   useEffect(() => {
     Animated.sequence([
       Animated.timing(scaleAnim, {
-        toValue: 1.025,
-        duration: 120,
+        toValue: 1.03,
+        duration: 100,
         useNativeDriver: true,
       }),
       Animated.timing(scaleAnim, {
         toValue: 1,
-        duration: 200,
+        duration: 180,
         useNativeDriver: true,
       }),
     ]).start();
@@ -31,63 +34,52 @@ export default function CircularTimer({ timeLeft }: { timeLeft: number }) {
   const formattedTime = `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
 
   return (
-    <View style={styles.outerRing}>
-      <View style={styles.innerRing}>
-        <View style={styles.face}>
+    <View 
+      className="items-center justify-center rounded-full bg-slate-900/40"
+      style={{
+        width: 220,
+        height: 220,
+        borderWidth: 6,
+        borderColor: phaseColor,
+        shadowColor: phaseColor,
+        shadowOffset: { width: 0, height: 6 },
+        shadowOpacity: isRunning ? 0.35 : 0.15,
+        shadowRadius: 16,
+        elevation: isRunning ? 12 : 6,
+      }}
+    >
+      <View className="items-center justify-center bg-slate-950/65 rounded-full" style={{ width: 194, height: 194 }}>
+        {/* Subtle decorative inner rings */}
+        <View className="absolute border border-white/5 rounded-full" style={{ width: 180, height: 180 }} />
+        <View className="absolute border border-white/10 border-dashed rounded-full" style={{ width: 166, height: 166 }} />
+        
+        <View className="items-center z-10">
+          {/* Active status icon */}
+          <Ionicons 
+            name={isRunning ? "play-circle" : "pause-circle"} 
+            size={16} 
+            color={phaseColor}
+            style={{ marginBottom: 2, opacity: isRunning ? 0.8 : 0.5 }}
+          />
+
           <Animated.Text
-            style={[styles.timeText, { transform: [{ scale: scaleAnim }] }]}
+            className="text-white text-5xl font-extrabold tracking-tighter"
+            style={[
+              { 
+                transform: [{ scale: scaleAnim }],
+                fontVariant: ["tabular-nums"],
+              }
+            ]}
           >
             {formattedTime}
           </Animated.Text>
-          <Text style={styles.labelText}>remaining</Text>
+          
+          <Text className="text-[9px] uppercase font-bold tracking-widest text-slate-400 mt-1">
+            Remaining
+          </Text>
         </View>
       </View>
     </View>
   );
 }
 
-const styles = StyleSheet.create({
-  outerRing: {
-    width: 320,
-    height: 320,
-    borderRadius: 160,
-    borderWidth: 12,
-    borderColor: "#6366F1",
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "#FFFFFF",
-    shadowColor: "#6366F1",
-    shadowOffset: {
-      width: 0,
-      height: 10,
-    },
-    shadowOpacity: 0.15,
-    shadowRadius: 30,
-    elevation: 10,
-  },
-  innerRing: {
-    width: 270,
-    height: 270,
-    borderRadius: 135,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "#FFFFFF",
-    borderWidth: 1,
-    borderColor: "#E2E8F0",
-  },
-  face: {
-    alignItems: "center",
-  },
-  timeText: {
-    fontSize: 72,
-    fontWeight: "800",
-    color: "#0F172A",
-    fontVariant: ["tabular-nums"],
-  },
-  labelText: {
-    fontSize: 12,
-    color: "#64748B",
-    marginTop: 8,
-    letterSpacing: 1,
-  },
-});

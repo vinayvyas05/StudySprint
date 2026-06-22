@@ -1,22 +1,17 @@
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { Surface } from "react-native-paper";
-
-const ACCENT = "#6366F1";
-const ACCENT_SOFT = "#EEF2FF";
-const BORDER = "#E2E8F0";
-const TEXT_MAIN = "#0F172A";
-const TEXT_MUTED = "#64748B";
+import { Text, TouchableOpacity, View } from "react-native";
 
 type Props = {
   selected: number;
   setSelected: (value: number) => void;
   disabled?: boolean;
+  phaseColor: string;
 };
 
 export default function SessionSelector({
   selected,
   setSelected,
   disabled,
+  phaseColor,
 }: Props) {
   const options = [
     { time: 25, label: "25" },
@@ -25,10 +20,12 @@ export default function SessionSelector({
   ];
 
   return (
-    <View style={styles.wrapper}>
-      <Text style={styles.sectionLabel}>Session Length</Text>
+    <View className="py-2 w-full">
+      <Text className="text-[10px] font-bold tracking-widest text-slate-400 uppercase text-center mb-4">
+        Session Duration (Minutes)
+      </Text>
 
-      <View style={styles.row}>
+      <View className="flex-row gap-3 justify-between">
         {options.map((opt) => {
           const isActive = selected === opt.time;
           return (
@@ -36,119 +33,60 @@ export default function SessionSelector({
               key={opt.time}
               disabled={disabled}
               onPress={() => setSelected(opt.time)}
-              activeOpacity={0.75}
-              style={{ flex: 1 }}
+              activeOpacity={0.8}
+              className="flex-1"
             >
-              <Surface
-                style={[
-                  styles.chip,
-                  isActive && styles.chipActive,
-                  disabled && styles.chipDisabled,
-                ]}
-                elevation={isActive ? 2 : 0}
+              <View
+                className={`items-center justify-center py-4 rounded-2xl border transition-all duration-200 ${
+                  disabled ? "opacity-40" : ""
+                }`}
+                style={{
+                  backgroundColor: isActive ? `${phaseColor}15` : "rgba(255, 255, 255, 0.03)",
+                  borderColor: isActive ? phaseColor : "rgba(255, 255, 255, 0.08)",
+                  borderWidth: isActive ? 1.5 : 1,
+                  shadowColor: isActive ? phaseColor : "transparent",
+                  shadowOffset: { width: 0, height: 2 },
+                  shadowOpacity: 0.15,
+                  shadowRadius: 6,
+                  elevation: isActive ? 3 : 0,
+                }}
               >
                 <Text
-                  style={[styles.chipValue, isActive && styles.chipValueActive]}
+                  className="text-lg font-bold tracking-tight"
+                  style={{ color: isActive ? "#FFFFFF" : "#94A3B8" }}
                 >
                   {opt.label}
                 </Text>
                 <Text
-                  style={[styles.chipUnit, isActive && styles.chipUnitActive]}
+                  className="text-[9px] font-bold tracking-wider uppercase mt-0.5"
+                  style={{ color: isActive ? phaseColor : "#64748B" }}
                 >
-                  min
+                  MIN
                 </Text>
-              </Surface>
+              </View>
             </TouchableOpacity>
           );
         })}
 
-        {/* Custom option */}
+        {/* Custom Option */}
         <TouchableOpacity
           disabled={disabled}
-          activeOpacity={0.75}
-          style={{ flex: 1 }}
+          activeOpacity={0.8}
+          className="flex-1"
         >
-          <Surface
-            style={[
-              styles.chip,
-              styles.chipCustom,
-              disabled && styles.chipDisabled,
-            ]}
-            elevation={0}
+          <View
+            className={`items-center justify-center py-4 rounded-2xl border border-dashed border-white/10 bg-transparent ${
+              disabled ? "opacity-40" : ""
+            }`}
           >
-            <Text style={styles.chipCustomText}>＋</Text>
-            <Text style={styles.chipUnit}>custom</Text>
-          </Surface>
+            <Text className="text-lg font-semibold text-slate-400">＋</Text>
+            <Text className="text-[9px] font-bold tracking-wider uppercase text-slate-500 mt-0.5">
+              CUSTOM
+            </Text>
+          </View>
         </TouchableOpacity>
       </View>
     </View>
   );
 }
 
-const styles = StyleSheet.create({
-  wrapper: {
-    paddingHorizontal: 20,
-    paddingTop: 4,
-    paddingBottom: 12,
-  },
-  sectionLabel: {
-    fontSize: 11,
-    fontWeight: "600",
-    color: TEXT_MUTED,
-    letterSpacing: 2,
-    textTransform: "uppercase",
-    marginBottom: 12,
-    textAlign: "center",
-  },
-  row: {
-    flexDirection: "row",
-    gap: 10,
-  },
-  chip: {
-    alignItems: "center",
-    justifyContent: "center",
-    paddingVertical: 16,
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: BORDER,
-    backgroundColor: "#FFFFFF",
-  },
-  chipActive: {
-    backgroundColor: "#6366F1",
-    borderColor: "#6366F1",
-  },
-  chipDisabled: {
-    opacity: 0.45,
-  },
-  chipCustom: {
-    borderStyle: "dashed",
-    borderColor: BORDER,
-    backgroundColor: "#FAFAF8",
-  },
-  chipValue: {
-    fontSize: 20,
-    fontWeight: "700",
-    color: TEXT_MAIN,
-    lineHeight: 24,
-  },
-  chipValueActive: {
-    color: "#FFFFFF",
-  },
-  chipUnit: {
-    fontSize: 10,
-    fontWeight: "500",
-    color: TEXT_MUTED,
-    letterSpacing: 1,
-    textTransform: "uppercase",
-    marginTop: 2,
-  },
-  chipUnitActive: {
-    color: "#FFFFFF",
-  },  
-  chipCustomText: {
-    fontSize: 20,
-    fontWeight: "700",
-    color: TEXT_MUTED,
-    lineHeight: 24,
-  },
-});
