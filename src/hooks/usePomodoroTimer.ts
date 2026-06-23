@@ -16,10 +16,10 @@ export function usePomodoroTimer(
 
   // reset on duration change
   useEffect(() => {
-    if (!isRunning && currentPhase === "focus") {
+    if (currentPhase === "focus") {
       setTimeLeft(selectedDuration * 60);
     }
-  }, [selectedDuration, isRunning, currentPhase]);
+  }, [selectedDuration]);
 
   // Stable timer interval: only restarts when isRunning changes
   useEffect(() => {
@@ -48,7 +48,7 @@ export function usePomodoroTimer(
         setTimeLeft(5); // for testing purpose
       } else {
         setCurrentPhase("shortBreak");
-        setTimeLeft(3);  // for testing purpose
+        setTimeLeft(3); // for testing purpose
       }
     }
 
@@ -101,4 +101,3 @@ export function usePomodoroTimer(
     reset,
   };
 }
-
