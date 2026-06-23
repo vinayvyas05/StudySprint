@@ -12,6 +12,10 @@
     },
     "android": {
       "package": "com.rvTechSol.studysprint",
+      "navigationBar": {
+        "backgroundColor": "#060918",
+        "barStyle": "light-content"
+      },
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/images/android-icon-foreground.png",

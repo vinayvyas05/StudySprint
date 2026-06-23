@@ -1,10 +1,13 @@
 import { Tabs } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { Platform } from "react-native";
+import { NavigationBar } from "expo-navigation-bar";
 
 export default function TabsLayout() {
   return (
-    <Tabs
+    <>
+      {Platform.OS === "android" && <NavigationBar style="dark" />}
+      <Tabs
       screenOptions={{
         headerShown: false,
         tabBarShowLabel: true,
@@ -88,5 +91,6 @@ export default function TabsLayout() {
         }}
       />
     </Tabs>
+    </>
   );
 }
