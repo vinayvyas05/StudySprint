@@ -60,7 +60,7 @@ const styles = StyleSheet.create({
   },
 
   xp: {
-    color: "#6366F1",
+    color: "#FFFFFF",
     fontWeight: "700",
   },
 

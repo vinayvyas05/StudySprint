@@ -36,7 +36,7 @@ export function JoinedGroupRow({
         </Text>
         <View className="flex-row items-center gap-1.5 mt-0.5">
           {category ? (
-            <Text className="text-indigo-400 text-[11px] font-semibold">
+            <Text className="text-slate-400 text-[11px] font-semibold">
               {category}
             </Text>
           ) : null}
@@ -119,14 +119,14 @@ export function SuggestedGroupRow({
       {/* Join Button */}
       <TouchableOpacity
         onPress={onJoin}
-        className="px-4 py-2 rounded-xl bg-indigo-500/15 border border-indigo-500/25"
+        className="px-4 py-2 rounded-xl bg-white/[0.06] border border-white/10"
         disabled={isLoading}
         activeOpacity={0.7}
       >
         {isLoading ? (
-          <ActivityIndicator size="small" color="#818CF8" />
+          <ActivityIndicator size="small" color="#94A3B8" />
         ) : (
-          <Text className="text-indigo-300 text-[13px] font-bold">Join</Text>
+          <Text className="text-slate-300 text-[13px] font-bold">Join</Text>
         )}
       </TouchableOpacity>
     </View>

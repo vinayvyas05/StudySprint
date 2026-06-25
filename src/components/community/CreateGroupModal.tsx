@@ -157,14 +157,14 @@ export default function CreateGroupModal({
                         onPress={() => setCategory(cat)}
                         className={`px-3 py-1.5 rounded-lg border ${
                           category === cat
-                            ? "bg-indigo-500/15 border-indigo-500/30"
+                            ? "bg-white/10 border-white/20"
                             : "bg-white/[0.04] border-white/[0.06]"
                         }`}
                         activeOpacity={0.7}
                       >
                         <Text
                           className={`text-[12px] font-semibold ${
-                            category === cat ? "text-indigo-300" : "text-slate-500"
+                            category === cat ? "text-white" : "text-slate-500"
                           }`}
                         >
                           {cat}
@@ -179,8 +179,8 @@ export default function CreateGroupModal({
             {/* Create Button */}
             <TouchableOpacity
               onPress={handleCreate}
-              className={`flex-row items-center justify-center gap-2 bg-indigo-500 py-4 rounded-2xl mt-6 ${
-                !isValid ? "opacity-40" : ""
+              className={`flex-row items-center justify-center gap-2 bg-white py-4 rounded-2xl mt-6 ${
+                !isValid ? "opacity-30" : ""
               }`}
               disabled={!isValid || isLoading}
               activeOpacity={0.8}
@@ -189,8 +189,8 @@ export default function CreateGroupModal({
                 <ActivityIndicator size="small" color="#fff" />
               ) : (
                 <>
-                  <Ionicons name="add-circle" size={18} color="#fff" />
-                  <Text className="text-white text-[15px] font-bold">
+                  <Ionicons name="add-circle" size={18} color="#0a0e27" />
+                  <Text className="text-[#0a0e27] text-[15px] font-bold">
                     Create Study Hall
                   </Text>
                 </>

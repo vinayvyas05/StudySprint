@@ -58,13 +58,13 @@ export function LevelCard({
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "#6366F1",
+    backgroundColor: "#1a1d2e",
     borderRadius: 32,
     padding: 24,
   },
 
   badge: {
-    color: "#E0E7FF",
+    color: "#94A3B8",
     letterSpacing: 2,
     fontWeight: "700",
   },
@@ -77,9 +77,10 @@ const styles = StyleSheet.create({
   },
 
   xpLabel: {
-    color: "#E0E7FF",
+    color: "#64748B",
     marginBottom: 24,
   },
+
 
   progress: {
     height: 10,
@@ -94,7 +95,7 @@ const styles = StyleSheet.create({
   },
 
   footerText: {
-    color: "#E0E7FF",
+    color: "#64748B",
     fontSize: 13,
   },
 });

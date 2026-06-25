@@ -21,7 +21,7 @@ function StatCardComponent({
           <MaterialCommunityIcons
             name={icon as any}
             size={20}
-            color="#6366F1"
+            color="#FFFFFF"
           />
         </View>
 
@@ -55,7 +55,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: "#EEF2FF",
+    backgroundColor: "rgba(255,255,255,0.08)",
     justifyContent: "center",
     alignItems: "center",
     marginBottom: 14,

@@ -114,11 +114,11 @@ export default function CommunityScreen() {
           </Text>
           <TouchableOpacity
             onPress={() => setModalVisible(true)}
-            className="flex-row items-center gap-1.5 px-4 py-2 rounded-xl bg-indigo-500/15 border border-indigo-500/25"
+            className="flex-row items-center gap-1.5 px-4 py-2 rounded-xl bg-white/[0.06] border border-white/10"
             activeOpacity={0.7}
           >
-            <Ionicons name="add" size={16} color="#818CF8" />
-            <Text className="text-indigo-300 text-[13px] font-bold">
+            <Ionicons name="add" size={16} color="#94A3B8" />
+            <Text className="text-slate-300 text-[13px] font-bold">
               Create
             </Text>
           </TouchableOpacity>
@@ -154,7 +154,7 @@ export default function CommunityScreen() {
         {/* ── Loading ── */}
         {loading && !refreshing ? (
           <View className="flex-1 items-center justify-center gap-3">
-            <ActivityIndicator size="large" color="#6366F1" />
+            <ActivityIndicator size="large" color="#94A3B8" />
             <Text className="text-slate-500 text-[13px]">
               Loading study halls...
             </Text>
@@ -167,8 +167,8 @@ export default function CommunityScreen() {
               <RefreshControl
                 refreshing={refreshing}
                 onRefresh={onRefresh}
-                tintColor="#6366F1"
-                colors={["#6366F1"]}
+                tintColor="#94A3B8"
+                colors={["#94A3B8"]}
                 progressBackgroundColor="#0a0e27"
               />
             }

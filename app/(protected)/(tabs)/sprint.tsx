@@ -14,7 +14,7 @@ const PHASE_CONFIG = {
   focus: {
     label: "Focus Session",
     subtitle: "Stay dedicated, block out distractions",
-    color: "#6366F1", // Indigo
+    color: "#FFFFFF", // White
   },
   shortBreak: {
     label: "Short Break",

@@ -11,7 +11,7 @@ export default function TabsLayout() {
       screenOptions={{
         headerShown: false,
         tabBarShowLabel: true,
-        tabBarActiveTintColor: "#818CF8", // Bright indigo for excellent contrast
+        tabBarActiveTintColor: "#FFFFFF", // White for monochrome dark mode
         tabBarInactiveTintColor: "#475569", // Slate grey for inactive tabs
         tabBarStyle: {
           backgroundColor: "#060918", // Deep space black-blue matching page backgrounds
