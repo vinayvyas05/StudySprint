@@ -5,14 +5,52 @@ import {
   doc,
   getDocs,
   increment,
+  onSnapshot,
   query,
   serverTimestamp,
+  Timestamp,
   updateDoc,
   where,
 } from "firebase/firestore";
 
 import { db } from "@/config/firebase";
 import { Group, CreateGroupPayload } from "@/types/group.types";
+
+/**
+ * Subscribe to real-time focusing counts per group.
+ * Listens to the `activeSessions` collection and filters
+ * only non-expired, actively focusing sessions.
+ *
+ * Returns an unsubscribe function.
+ */
+export function subscribeToFocusingCounts(
+  onUpdate: (counts: Record<string, number>) => void
+) {
+  const sessionsQuery = query(
+    collection(db, "activeSessions"),
+    where("isFocusing", "==", true)
+  );
+
+  return onSnapshot(sessionsQuery, (snapshot) => {
+    const counts: Record<string, number> = {};
+    const now = Timestamp.now();
+
+    snapshot.docs.forEach((doc) => {
+      const data = doc.data();
+      const expiresAt = data.expiresAt as Timestamp | undefined;
+
+      // Skip expired sessions
+      if (expiresAt && expiresAt.toMillis() < now.toMillis()) return;
+
+      const groupId = data.groupId as string;
+      if (groupId) {
+        counts[groupId] = (counts[groupId] || 0) + 1;
+      }
+    });
+
+    onUpdate(counts);
+  });
+}
 
 export const getGroups = async (): Promise<Group[]> => {
   const snapshot = await getDocs(collection(db, "groups"));

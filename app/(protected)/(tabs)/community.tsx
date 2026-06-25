@@ -27,6 +27,7 @@ export default function CommunityScreen() {
     groups,
     joinedGroupIds,
     categories,
+    focusingCounts,
     loading,
     actionLoading,
     error,
@@ -60,6 +61,16 @@ export default function CommunityScreen() {
       suggestedGroups: filtered.filter((g) => !joinedGroupIds.has(g.id)),
     };
   }, [groups, joinedGroupIds, search]);
+
+  // ─── Community-wide stats ──────────────────────────────────
+  const totalMembers = useMemo(
+    () => groups.reduce((sum, g) => sum + g.memberCount, 0),
+    [groups]
+  );
+  const totalFocusing = useMemo(
+    () => Object.values(focusingCounts).reduce((sum, c) => sum + c, 0),
+    [focusingCounts]
+  );
 
   // ─── Pull-to-refresh ───────────────────────────────────────
   const onRefresh = useCallback(async () => {
@@ -123,6 +134,24 @@ export default function CommunityScreen() {
             </Text>
           </TouchableOpacity>
         </View>
+
+        {/* ── Community Stats Bar ── */}
+        {!loading && (
+          <View className="flex-row items-center gap-4 mx-6 mb-4 px-4 py-2.5 rounded-2xl bg-white/[0.03] border border-white/[0.05]">
+            <View className="flex-row items-center gap-1.5">
+              <Ionicons name="people" size={14} color="#64748B" />
+              <Text className="text-slate-400 text-[12px] font-medium">
+                {totalMembers} {totalMembers === 1 ? "member" : "members"}
+              </Text>
+            </View>
+            <View className="flex-row items-center gap-1.5">
+              <View className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+              <Text className="text-emerald-400 text-[12px] font-semibold">
+                {totalFocusing} focusing now
+              </Text>
+            </View>
+          </View>
+        )}
 
         {/* ── Search ── */}
         <View className="flex-row items-center bg-white/[0.04] border border-white/[0.06] rounded-2xl mx-6 px-4 py-2.5 gap-3 mb-5">
@@ -203,6 +232,7 @@ export default function CommunityScreen() {
                       name={group.name}
                       category={group.category ?? ""}
                       memberCount={group.memberCount}
+                      focusingCount={focusingCounts[group.id] ?? 0}
                       isOwner={group.createdBy === userId}
                       isLoading={actionLoading === group.id}
                       isLast={index === joinedGroups.length - 1}
@@ -245,6 +275,7 @@ export default function CommunityScreen() {
                       name={group.name}
                       category={group.category ?? ""}
                       memberCount={group.memberCount}
+                      focusingCount={focusingCounts[group.id] ?? 0}
                       isLoading={actionLoading === group.id}
                       isLast={index === suggestedGroups.length - 1}
                       onJoin={() => join(group.id)}

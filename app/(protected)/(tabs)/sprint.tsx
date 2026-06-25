@@ -1,7 +1,7 @@
 import CircularTimer from "@/components/sprint/CircularTimer";
 import SessionSelector from "@/components/sprint/SessionSelector";
 import StartButton from "@/components/sprint/StartButton";
-import { useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { StatusBar, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ModeSelector } from "@/components/sprint/ModeSelector";
@@ -11,6 +11,11 @@ import { usePomodoroTimer } from "@/hooks/usePomodoroTimer";
 import { useFocusSession } from "@/hooks/useFocusSession";
 import { createSession, updateUserStats } from "@/services/session.service";
 import { useAuthStore } from "@/store/auth.store";
+import {
+  startActiveSession,
+  stopActiveSession,
+} from "@/services/active-session.service";
+import { getUserGroups } from "@/services/group.service";
 
 // ─── Per-phase display config ────────────────────────────────────
 const PHASE_CONFIG = {
@@ -41,6 +46,62 @@ export default function SprintScreen() {
   const [mode, setMode] = useState<SessionMode>("sprint");
   const [selectedDuration, setSelectedDuration] = useState(1); // after testing is done set it to 25
 
+  // ─── Track user's primary group for active session ────────────
+  const primaryGroupIdRef = useRef<string | null>(null);
+  const isSessionActiveRef = useRef(false);
+
+  useEffect(() => {
+    if (!user?.uid) return;
+
+    getUserGroups(user.uid)
+      .then((groupIds) => {
+        primaryGroupIdRef.current = groupIds[0] ?? null;
+      })
+      .catch((err) => {
+        console.error("Failed to fetch user groups:", err);
+      });
+  }, [user?.uid]);
+
+  // ─── Active session helpers ───────────────────────────────────
+  const beginActiveSession = useCallback(
+    async (durationMinutes: number) => {
+      if (!user || !primaryGroupIdRef.current) return;
+
+      try {
+        await startActiveSession({
+          userId: user.uid,
+          groupId: primaryGroupIdRef.current,
+          displayName: user.name,
+          durationMinutes,
+        });
+        isSessionActiveRef.current = true;
+      } catch (err) {
+        console.error("Failed to start active session:", err);
+      }
+    },
+    [user]
+  );
+
+  const endActiveSession = useCallback(async () => {
+    if (!user || !isSessionActiveRef.current) return;
+
+    try {
+      await stopActiveSession(user.uid);
+      isSessionActiveRef.current = false;
+    } catch (err) {
+      console.error("Failed to stop active session:", err);
+    }
+  }, [user]);
+
+  // Clean up active session on unmount
+  useEffect(() => {
+    return () => {
+      if (isSessionActiveRef.current && user?.uid) {
+        stopActiveSession(user.uid).catch(console.error);
+      }
+    };
+  }, [user?.uid]);
+
   // 🔥 Firestore + XP logic stays here (clean separation)
   const handleSprintComplete = async () => {
     if (!user) return;
@@ -58,6 +119,7 @@ export default function SprintScreen() {
     });
 
     await updateUserStats(user.uid, totalFocus);
+    await endActiveSession();
   };
 
   // 🔥 Timer logic moved to hook
@@ -77,6 +139,38 @@ export default function SprintScreen() {
     stop: stopFocus,
     reset: resetFocus,
   } = useFocusSession(); // 🔥 Focus session timer
+
+  // ─── Wrapped sprint handlers ──────────────────────────────────
+  const handleSprintStart = useCallback(() => {
+    startSprint();
+    beginActiveSession(selectedDuration);
+  }, [startSprint, beginActiveSession, selectedDuration]);
+
+  const handleSprintPause = useCallback(() => {
+    pauseSprint();
+    endActiveSession();
+  }, [pauseSprint, endActiveSession]);
+
+  const handleSprintReset = useCallback(() => {
+    resetSprint();
+    endActiveSession();
+  }, [resetSprint, endActiveSession]);
+
+  // ─── Wrapped focus handlers ───────────────────────────────────
+  const handleFocusStart = useCallback(() => {
+    startFocus();
+    beginActiveSession(480); // 8h max for open-ended focus
+  }, [startFocus, beginActiveSession]);
+
+  const handleFocusStop = useCallback(() => {
+    stopFocus();
+    endActiveSession();
+  }, [stopFocus, endActiveSession]);
+
+  const handleFocusReset = useCallback(() => {
+    resetFocus();
+    endActiveSession();
+  }, [resetFocus, endActiveSession]);
 
   const phase = PHASE_CONFIG[currentPhase] ?? PHASE_CONFIG.focus;
 
@@ -177,9 +271,9 @@ export default function SprintScreen() {
         <View className="gap-4 w-full">
           <StartButton
             isRunning={mode === "sprint" ? isSprintRunning : isFocusRunning}
-            onStart={mode === "sprint" ? startSprint : startFocus}
-            onPause={mode === "sprint" ? pauseSprint : stopFocus}
-            onReset={mode === "sprint" ? resetSprint : resetFocus}
+            onStart={mode === "sprint" ? handleSprintStart : handleFocusStart}
+            onPause={mode === "sprint" ? handleSprintPause : handleFocusStop}
+            onReset={mode === "sprint" ? handleSprintReset : handleFocusReset}
             phaseColor={phase.color}
           />
 
@@ -198,3 +292,4 @@ export default function SprintScreen() {
     </SafeAreaView>
   );
 }
+

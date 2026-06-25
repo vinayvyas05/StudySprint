@@ -7,6 +7,7 @@ import {
   leaveGroup,
   createGroup,
   deleteGroup,
+  subscribeToFocusingCounts,
 } from "@/services/group.service";
 import { useAuthStore } from "@/store/auth.store";
 import type { Group, CreateGroupPayload } from "@/types/group.types";
@@ -19,6 +20,7 @@ export function useCommunity() {
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [focusingCounts, setFocusingCounts] = useState<Record<string, number>>({});
 
   // Derive unique categories from fetched groups (no hardcoding)
   const categories = useMemo(() => {
@@ -58,6 +60,12 @@ export function useCommunity() {
   useEffect(() => {
     fetchGroups();
   }, [fetchGroups]);
+
+  // Subscribe to real-time focusing counts
+  useEffect(() => {
+    const unsubscribe = subscribeToFocusingCounts(setFocusingCounts);
+    return unsubscribe;
+  }, []);
 
   const handleJoin = async (groupId: string) => {
     if (!user?.uid || actionLoading) return;
@@ -170,6 +178,7 @@ export function useCommunity() {
     groups,
     joinedGroupIds,
     categories,
+    focusingCounts,
     loading,
     actionLoading,
     error,

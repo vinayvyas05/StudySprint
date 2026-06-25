@@ -6,6 +6,7 @@ type JoinedRowProps = {
   name: string;
   category: string;
   memberCount: number;
+  focusingCount: number;
   isOwner: boolean;
   isLoading: boolean;
   onLeave: () => void;
@@ -17,6 +18,7 @@ export function JoinedGroupRow({
   name,
   category,
   memberCount,
+  focusingCount,
   isOwner,
   isLoading,
   onLeave,
@@ -44,6 +46,17 @@ export function JoinedGroupRow({
           <Text className="text-slate-500 text-[11px]">
             {memberCount} {memberCount === 1 ? "member" : "members"}
           </Text>
+          {focusingCount > 0 && (
+            <>
+              <Text className="text-slate-600 text-[11px]">·</Text>
+              <View className="flex-row items-center gap-1">
+                <View className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                <Text className="text-emerald-400 text-[11px] font-semibold">
+                  {focusingCount} focusing
+                </Text>
+              </View>
+            </>
+          )}
         </View>
       </View>
 
@@ -79,6 +92,7 @@ type SuggestedRowProps = {
   name: string;
   category: string;
   memberCount: number;
+  focusingCount: number;
   isLoading: boolean;
   onJoin: () => void;
   isLast: boolean;
@@ -88,6 +102,7 @@ export function SuggestedGroupRow({
   name,
   category,
   memberCount,
+  focusingCount,
   isLoading,
   onJoin,
   isLast,
@@ -113,6 +128,17 @@ export function SuggestedGroupRow({
           <Text className="text-slate-500 text-[11px]">
             {memberCount} {memberCount === 1 ? "member" : "members"}
           </Text>
+          {focusingCount > 0 && (
+            <>
+              <Text className="text-slate-600 text-[11px]">·</Text>
+              <View className="flex-row items-center gap-1">
+                <View className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                <Text className="text-emerald-400 text-[11px] font-semibold">
+                  {focusingCount} focusing
+                </Text>
+              </View>
+            </>
+          )}
         </View>
       </View>
 
