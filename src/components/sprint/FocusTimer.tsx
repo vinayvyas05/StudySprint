@@ -27,11 +27,6 @@ export default React.memo(function FocusTimer({
         height: 240,
         borderWidth: 1,
         borderColor: "rgba(255, 255, 255, 0.05)",
-        shadowColor: "#8B5CF6", // Violet glow
-        shadowOffset: { width: 0, height: 0 },
-        shadowOpacity: 0.15,
-        shadowRadius: 30,
-        elevation: 10,
       }}
     >
       <View className="items-center justify-center bg-slate-950/60 rounded-full border border-white/5" style={{ width: 210, height: 210 }}>

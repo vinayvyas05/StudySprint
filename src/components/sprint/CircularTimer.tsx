@@ -22,11 +22,6 @@ export default React.memo(function CircularTimer({ timeLeft, phaseColor, phaseLa
         height: 220,
         borderWidth: 6,
         borderColor: phaseColor,
-        shadowColor: phaseColor,
-        shadowOffset: { width: 0, height: 6 },
-        shadowOpacity: isRunning ? 0.35 : 0.15,
-        shadowRadius: 16,
-        elevation: isRunning ? 12 : 6,
       }}
     >
       <View className="items-center justify-center bg-slate-950/65 rounded-full" style={{ width: 194, height: 194 }}>

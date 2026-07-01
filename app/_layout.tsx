@@ -3,7 +3,7 @@
 import { Stack } from "expo-router";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { useEffect } from "react";
-import { LogBox } from "react-native";
+import { LogBox, Platform } from "react-native";
 import { useAuthStore } from "@/store/auth.store";
 
 // Ignore harmless Firebase Web SDK warnings in React Native
@@ -17,6 +17,7 @@ export default function RootLayout() {
 
     return unsubscribe;
   }, []);
+  
   return (
     <SafeAreaProvider>
       <Stack
