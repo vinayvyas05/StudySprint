@@ -46,8 +46,8 @@ export default function SprintScreen() {
   const [mode, setMode] = useState<SessionMode>("sprint");
   const [selectedDuration, setSelectedDuration] = useState(1); // after testing is done set it to 25
 
-  // ─── Track user's primary group for active session ────────────
-  const primaryGroupIdRef = useRef<string | null>(null);
+  // ─── Track user's groups for active session ────────────
+  const userGroupIdsRef = useRef<string[]>([]);
   const isSessionActiveRef = useRef(false);
 
   useEffect(() => {
@@ -55,7 +55,7 @@ export default function SprintScreen() {
 
     getUserGroups(user.uid)
       .then((groupIds) => {
-        primaryGroupIdRef.current = groupIds[0] ?? null;
+        userGroupIdsRef.current = groupIds;
       })
       .catch((err) => {
         console.error("Failed to fetch user groups:", err);
@@ -65,12 +65,12 @@ export default function SprintScreen() {
   // ─── Active session helpers ───────────────────────────────────
   const beginActiveSession = useCallback(
     async (durationMinutes: number) => {
-      if (!user || !primaryGroupIdRef.current) return;
+      if (!user || userGroupIdsRef.current.length === 0) return;
 
       try {
         await startActiveSession({
           userId: user.uid,
-          groupId: primaryGroupIdRef.current,
+          groupIds: userGroupIdsRef.current,
           displayName: user.name,
           durationMinutes,
         });

@@ -68,7 +68,7 @@ export function useCommunity() {
   }, []);
 
   const handleJoin = async (groupId: string) => {
-    if (!user?.uid || actionLoading) return;
+    if (!user?.uid || actionLoading || joinedGroupIds.has(groupId)) return;
 
     try {
       setActionLoading(groupId);
@@ -89,7 +89,7 @@ export function useCommunity() {
   };
 
   const handleLeave = async (groupId: string) => {
-    if (!user?.uid || actionLoading) return;
+    if (!user?.uid || actionLoading || !joinedGroupIds.has(groupId)) return;
 
     try {
       setActionLoading(groupId);
@@ -120,7 +120,7 @@ export function useCommunity() {
     description: string,
     category: string
   ) => {
-    if (!user?.uid) return;
+    if (!user?.uid || actionLoading) return;
 
     try {
       setActionLoading("creating");
@@ -155,6 +155,12 @@ export function useCommunity() {
 
   const handleDelete = async (groupId: string) => {
     if (!user?.uid || actionLoading) return;
+
+    const targetGroup = groups.find((g) => g.id === groupId);
+    if (!targetGroup || targetGroup.createdBy !== user.uid) {
+      console.warn("Unauthorized: Only the creator can delete this group.");
+      return;
+    }
 
     try {
       setActionLoading(groupId);

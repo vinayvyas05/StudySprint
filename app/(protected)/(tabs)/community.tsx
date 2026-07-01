@@ -112,17 +112,6 @@ export default function CommunityScreen() {
     },
     [leave]
   );
-
-  console.log("focusingCounts =", focusingCounts);
-
-groups.forEach((g) => {
-  console.log({
-    name: g.name,
-    id: g.id,
-    count: focusingCounts[g.id],
-  });
-});
-
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#0a0e27" }}>
       <StatusBar barStyle="light-content" backgroundColor="#0a0e27" />

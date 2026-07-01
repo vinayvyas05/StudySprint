@@ -25,7 +25,6 @@ export function JoinedGroupRow({
   onDelete,
   isLast,
 }: JoinedRowProps) {
-  console.log("focsingCount", focusingCount);
   return (
     <View
       className={`flex-row items-center px-4 py-3.5 ${
@@ -54,7 +53,6 @@ export function JoinedGroupRow({
                 <View className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
                 <Text className="text-emerald-400 text-[11px] font-semibold">
                   {focusingCount} focusing
-                  
                 </Text>
               </View>
             </>

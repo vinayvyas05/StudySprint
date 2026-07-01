@@ -11,7 +11,7 @@ import { db } from "@/config/firebase";
 
 export interface ActiveSession {
   userId: string;
-  groupId: string;
+  groupIds: string[];
   displayName: string;
 
   isFocusing: boolean;
@@ -24,13 +24,13 @@ const ACTIVE_SESSIONS_COLLECTION = "activeSessions";
 
 export async function startActiveSession(params: {
   userId: string;
-  groupId: string;
+  groupIds: string[];
   displayName: string;
   durationMinutes: number;
 }) {
   const {
     userId,
-    groupId,
+    groupIds,
     displayName,
     durationMinutes,
   } = params;
@@ -43,7 +43,7 @@ export async function startActiveSession(params: {
     doc(db, ACTIVE_SESSIONS_COLLECTION, userId),
     {
       userId,
-      groupId,
+      groupIds,
       displayName,
 
       isFocusing: true,

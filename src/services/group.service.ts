@@ -42,10 +42,12 @@ export function subscribeToFocusingCounts(
       // Skip expired sessions
       if (expiresAt && expiresAt.toMillis() < now.toMillis()) return;
 
-      const groupId = data.groupId as string;
-      if (groupId) {
+      // Support both new `groupIds` array and old `groupId` string for backward compatibility
+      const groupIds = (data.groupIds as string[]) || (data.groupId ? [data.groupId] : []);
+      
+      groupIds.forEach((groupId) => {
         counts[groupId] = (counts[groupId] || 0) + 1;
-      }
+      });
     });
 
     onUpdate(counts);
