@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 type Phase = "focus" | "shortBreak" | "longBreak" | "completed";
 
@@ -71,7 +71,7 @@ export function usePomodoroTimer(
     }
   }, [timeLeft, currentPhase, currentCycle, selectedDuration, onComplete]);
 
-  const start = () => {
+  const start = useCallback(() => {
     if (currentPhase === "completed") {
       setCurrentPhase("focus");
       setCurrentCycle(1);
@@ -80,16 +80,17 @@ export function usePomodoroTimer(
     }
 
     setIsRunning(true);
-  };
-  const pause = () => setIsRunning(false);
+  }, [currentPhase, selectedDuration]);
 
-  const reset = () => {
+  const pause = useCallback(() => setIsRunning(false), []);
+
+  const reset = useCallback(() => {
     setIsRunning(false);
     setCurrentPhase("focus");
     setCurrentCycle(1);
     setTimeLeft(selectedDuration * 60);
     hasCompletedRef.current = false;
-  };
+  }, [selectedDuration]);
 
   return {
     timeLeft,

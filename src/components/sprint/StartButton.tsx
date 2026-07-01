@@ -1,3 +1,4 @@
+import React from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 
@@ -7,15 +8,19 @@ type Props = {
   onPause: () => void;
   onReset: () => void;
   phaseColor: string;
+  label: string;
 };
 
-export default function StartButton({
+export default React.memo(function StartButton({
   isRunning,
   onStart,
   onPause,
   onReset,
   phaseColor,
+  label,
 }: Props) {
+  const isWhiteBg = phaseColor.toUpperCase() === "#FFFFFF";
+
   return (
     <View className="flex-row items-center justify-center gap-4 w-full">
       {/* Reset Button (Secondary Icon) */}
@@ -46,16 +51,16 @@ export default function StartButton({
         <Ionicons 
           name={isRunning ? "pause" : "play"} 
           size={20} 
-          color={isRunning ? "#F1F5F9" : "#FFFFFF"} 
+          color={isRunning ? "#F1F5F9" : isWhiteBg ? "#000000" : "#FFFFFF"} 
         />
         <Text 
           className="text-base font-bold tracking-wide"
-          style={{ color: isRunning ? "#E2E8F0" : "#FFFFFF" }}
+          style={{ color: isRunning ? "#E2E8F0" : isWhiteBg ? "#000000" : "#FFFFFF" }}
         >
-          {isRunning ? "Pause" : "Start Sprint"}
+          {isRunning ? "Pause" : label}
         </Text>
       </TouchableOpacity>
     </View>
   );
-}
+});
 

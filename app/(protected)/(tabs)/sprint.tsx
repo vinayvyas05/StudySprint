@@ -1,8 +1,8 @@
 import CircularTimer from "@/components/sprint/CircularTimer";
 import SessionSelector from "@/components/sprint/SessionSelector";
 import StartButton from "@/components/sprint/StartButton";
-import { useCallback, useEffect, useRef, useState } from "react";
-import { StatusBar, Text, View } from "react-native";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Alert, StatusBar, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ModeSelector } from "@/components/sprint/ModeSelector";
 import type { SessionMode } from "../../../src/types/focus.types";
@@ -22,7 +22,7 @@ const PHASE_CONFIG = {
   focus: {
     label: "Focus Session",
     subtitle: "Stay dedicated, block out distractions",
-    color: "#FFFFFF", // White
+    color: "#8B5CF6", // Violet (Matches deep galaxy theme)
   },
   shortBreak: {
     label: "Short Break",
@@ -103,7 +103,7 @@ export default function SprintScreen() {
   }, [user?.uid]);
 
   // 🔥 Firestore + XP logic stays here (clean separation)
-  const handleSprintComplete = async () => {
+  const handleSprintComplete = useCallback(async () => {
     if (!user) return;
 
     const totalFocus = selectedDuration * 4;
@@ -120,7 +120,7 @@ export default function SprintScreen() {
 
     await updateUserStats(user.uid, totalFocus);
     await endActiveSession();
-  };
+  }, [user, selectedDuration, endActiveSession]);
 
   // 🔥 Timer logic moved to hook
   const {
@@ -176,6 +176,75 @@ export default function SprintScreen() {
 
   const phase = PHASE_CONFIG[currentPhase] ?? PHASE_CONFIG.focus;
 
+  // ─── Avoid recreating handleModeChange every second ───────────
+  const stateRef = useRef({ isSprintActive: false, isFocusActive: false });
+  stateRef.current = {
+    isSprintActive:
+      isSprintRunning ||
+      timeLeft !== selectedDuration * 60 ||
+      currentCycle !== 1 ||
+      currentPhase !== "focus",
+    isFocusActive: isFocusRunning || elapsedTime > 0,
+  };
+
+  const handleModeChange = useCallback(
+    (newMode: SessionMode) => {
+      if (newMode === mode) return;
+
+      const { isSprintActive, isFocusActive } = stateRef.current;
+
+      if (mode === "sprint" && isSprintActive) {
+        Alert.alert(
+          "Active Session",
+          "Please reset your Sprint before switching to Focus mode."
+        );
+        return;
+      }
+
+      if (mode === "focus" && isFocusActive) {
+        Alert.alert(
+          "Active Session",
+          "Please reset your Focus session before switching to Sprint mode."
+        );
+        return;
+      }
+
+      setMode(newMode);
+    },
+    [mode]
+  );
+
+  // ─── Memoize heavy phase indicators ─────────────────────────────
+  const phaseIndicators = useMemo(() => {
+    return (
+      <View className="flex-row items-center justify-center gap-3 w-full px-12">
+        {[1, 2, 3, 4].map((c) => {
+          const isCompleted = c < currentCycle;
+          const isActive = c === currentCycle;
+
+          return (
+            <View
+              key={c}
+              className="h-1.5 rounded-full flex-1"
+              style={{
+                backgroundColor: isActive
+                  ? phase.color
+                  : isCompleted
+                    ? `${phase.color}60`
+                    : "rgba(255, 255, 255, 0.05)",
+                shadowColor: phase.color,
+                shadowOffset: { width: 0, height: 0 },
+                shadowOpacity: isActive ? 0.6 : 0,
+                shadowRadius: 8,
+                elevation: isActive ? 4 : 0,
+              }}
+            />
+          );
+        })}
+      </View>
+    );
+  }, [currentCycle, phase.color]);
+
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#0a0e27" }}>
       <StatusBar barStyle="light-content" backgroundColor="#0a0e27" />
@@ -183,104 +252,62 @@ export default function SprintScreen() {
       {/* Main Container */}
       <View
         style={{ flex: 1, backgroundColor: "#0a0e27" }}
-        className="justify-between px-6 py-4"
+        className="px-6 py-4"
       >
         {/* ── Page Header ── */}
-        <View className="flex-row items-center justify-between pb-1">
+        <View className="flex-row items-center justify-between pb-6">
           <View>
             <Text className="text-white text-3xl font-extrabold tracking-tight">
-              Sprint
+              Timer
             </Text>
             <Text className="text-slate-400 text-[10px] tracking-widest uppercase mt-0.5 font-bold">
-              Pomodoro Focus Timer
+              Deep Galaxy Focus
             </Text>
           </View>
           <View className="bg-white/5 border border-white/10 rounded-2xl px-3 py-1 flex-row items-center gap-1.5">
-            <View className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+            <View className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse will-change-animation" />
             <Text className="text-slate-300 text-[10px] font-bold uppercase tracking-wider">
               Live
             </Text>
           </View>
         </View>
 
-        <ModeSelector mode={mode} onModeChange={setMode} />
+        <ModeSelector mode={mode} onModeChange={handleModeChange} />
 
-        {mode === "sprint" && (
-          <View className="p-4 bg-white/[0.03] border border-white/10 rounded-3xl items-center shadow-lg shadow-black/20">
-            <View className="flex-row items-center justify-center gap-2 mb-3 w-full px-1">
-              {[1, 2, 3, 4].map((c) => {
-                const isCompleted = c < currentCycle;
-                const isActive = c === currentCycle;
-
-                return (
-                  <View
-                    key={c}
-                    className="h-1.5 rounded-full flex-1"
-                    style={{
-                      backgroundColor: isActive
-                        ? phase.color
-                        : isCompleted
-                          ? `${phase.color}75`
-                          : "rgba(255, 255, 255, 0.08)",
-                      shadowColor: phase.color,
-                      shadowOffset: { width: 0, height: 0 },
-                      shadowOpacity: isActive ? 0.8 : 0,
-                      shadowRadius: 6,
-                      elevation: isActive ? 4 : 0,
-                    }}
-                  />
-                );
-              })}
-            </View>
-
-            {/* Phase Meta */}
-            <Text className="text-[9px] font-bold tracking-widest text-slate-400 uppercase mb-1">
-              {currentPhase === "focus" ? "Focus Session" : "Rest Break"}
-            </Text>
-
-            {/* Current phase and state */}
-            <Text className="text-xl font-extrabold text-white mb-0.5">
-              {phase.label}
-            </Text>
-
-            <Text className="text-xs text-slate-400 text-center font-medium px-4">
-              {phase.subtitle}
-            </Text>
-
-            <View className="mt-3 bg-white/5 border border-white/5 rounded-full px-3 py-1 flex-row items-center gap-1.5">
-              <Text className="text-[9px] font-bold text-slate-300 uppercase tracking-wider">
-                Cycle {currentCycle} of 4
-              </Text>
-            </View>
-          </View>
-        )}
-
-        {/* ── Timer Section ── */}
-        <View className="justify-center items-center py-2">
-          {mode === "sprint" ? (
-            <CircularTimer
-              timeLeft={timeLeft}
-              phaseColor={phase.color}
-              phaseLabel={phase.label}
-              isRunning={isSprintRunning}
-            />
-          ) : (
-            <FocusTimer elapsedTime={elapsedTime} />
-          )}
+        {/* ── Center Stage: Timer & Phase Info ── */}
+        <View className="flex-1 justify-center items-center">
+           {/* The Timer component itself */}
+           <View className="mb-10">
+             {mode === "sprint" ? (
+               <CircularTimer
+                 timeLeft={timeLeft}
+                 phaseColor={phase.color}
+                 phaseLabel={phase.label}
+                 isRunning={isSprintRunning}
+               />
+             ) : (
+               <FocusTimer elapsedTime={elapsedTime} />
+             )}
+           </View>
+           
+           {/* Phase Info underneath (only for sprint) */}
+           {mode === "sprint" && (
+             <View className="w-full items-center">
+               <Text className="text-2xl font-extrabold text-white mb-1 tracking-tight">
+                 {phase.label}
+               </Text>
+               <Text className="text-xs text-slate-400 font-medium mb-8">
+                 {phase.subtitle}
+               </Text>
+               {phaseIndicators}
+             </View>
+           )}
         </View>
 
-        {/* ── Controls & Selector Dock ── */}
-        <View className="gap-4 w-full">
-          <StartButton
-            isRunning={mode === "sprint" ? isSprintRunning : isFocusRunning}
-            onStart={mode === "sprint" ? handleSprintStart : handleFocusStart}
-            onPause={mode === "sprint" ? handleSprintPause : handleFocusStop}
-            onReset={mode === "sprint" ? handleSprintReset : handleFocusReset}
-            phaseColor={phase.color}
-          />
-
+        {/* ── Bottom Controls ── */}
+        <View className="pt-4 pb-2 w-full">
           {mode === "sprint" && (
-            <View className="border-t border-white/5 pt-2">
+            <View className="mb-6">
               <SessionSelector
                 selected={selectedDuration}
                 setSelected={setSelectedDuration}
@@ -289,6 +316,15 @@ export default function SprintScreen() {
               />
             </View>
           )}
+
+          <StartButton
+            isRunning={mode === "sprint" ? isSprintRunning : isFocusRunning}
+            onStart={mode === "sprint" ? handleSprintStart : handleFocusStart}
+            onPause={mode === "sprint" ? handleSprintPause : handleFocusStop}
+            onReset={mode === "sprint" ? handleSprintReset : handleFocusReset}
+            phaseColor={mode === "sprint" ? phase.color : "#8B5CF6"}
+            label={mode === "sprint" ? "Start Sprint" : "Start Focus"}
+          />
         </View>
       </View>
     </SafeAreaView>

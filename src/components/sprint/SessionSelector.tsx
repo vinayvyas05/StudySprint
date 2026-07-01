@@ -1,3 +1,4 @@
+import React from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 
 type Props = {
@@ -7,7 +8,7 @@ type Props = {
   phaseColor: string;
 };
 
-export default function SessionSelector({
+export default React.memo(function SessionSelector({
   selected,
   setSelected,
   disabled,
@@ -21,11 +22,11 @@ export default function SessionSelector({
 
   return (
     <View className="py-2 w-full">
-      <Text className="text-[10px] font-bold tracking-widest text-slate-400 uppercase text-center mb-4">
-        Session Duration (Minutes)
+      <Text className="text-[9px] font-bold tracking-widest text-slate-500 uppercase text-center mb-3">
+        Session Duration
       </Text>
 
-      <View className="flex-row gap-3 justify-between">
+      <View className="flex-row gap-3 justify-center px-4">
         {options.map((opt) => {
           const isActive = selected === opt.time;
           return (
@@ -34,32 +35,27 @@ export default function SessionSelector({
               disabled={disabled}
               onPress={() => setSelected(opt.time)}
               activeOpacity={0.8}
-              className="flex-1"
+              className="flex-1 max-w-[80px]"
             >
               <View
-                className={`items-center justify-center py-4 rounded-2xl border transition-all duration-200 ${
-                  disabled ? "opacity-40" : ""
+                className={`items-center justify-center py-2.5 rounded-2xl border transition-all duration-200 ${
+                  disabled ? "opacity-30" : ""
                 }`}
                 style={{
-                  backgroundColor: isActive ? `${phaseColor}15` : "rgba(255, 255, 255, 0.03)",
-                  borderColor: isActive ? phaseColor : "rgba(255, 255, 255, 0.08)",
-                  borderWidth: isActive ? 1.5 : 1,
-                  shadowColor: isActive ? phaseColor : "transparent",
-                  shadowOffset: { width: 0, height: 2 },
-                  shadowOpacity: 0.15,
-                  shadowRadius: 6,
-                  elevation: isActive ? 3 : 0,
+                  backgroundColor: isActive ? "rgba(255, 255, 255, 0.08)" : "transparent",
+                  borderColor: isActive ? "rgba(255, 255, 255, 0.2)" : "rgba(255, 255, 255, 0.05)",
+                  borderWidth: 1,
                 }}
               >
                 <Text
-                  className="text-lg font-bold tracking-tight"
-                  style={{ color: isActive ? "#FFFFFF" : "#94A3B8" }}
+                  className="text-base font-bold tracking-tight"
+                  style={{ color: isActive ? "#FFFFFF" : "#64748B" }}
                 >
                   {opt.label}
                 </Text>
                 <Text
-                  className="text-[9px] font-bold tracking-wider uppercase mt-0.5"
-                  style={{ color: isActive ? phaseColor : "#64748B" }}
+                  className="text-[8px] font-bold tracking-widest uppercase mt-0.5"
+                  style={{ color: isActive ? "#94A3B8" : "#475569" }}
                 >
                   MIN
                 </Text>
@@ -72,15 +68,15 @@ export default function SessionSelector({
         <TouchableOpacity
           disabled={disabled}
           activeOpacity={0.8}
-          className="flex-1"
+          className="flex-1 max-w-[80px]"
         >
           <View
-            className={`items-center justify-center py-4 rounded-2xl border border-dashed border-white/10 bg-transparent ${
-              disabled ? "opacity-40" : ""
+            className={`items-center justify-center py-2.5 rounded-2xl border border-dashed border-white/10 bg-transparent ${
+              disabled ? "opacity-30" : ""
             }`}
           >
-            <Text className="text-lg font-semibold text-slate-400">＋</Text>
-            <Text className="text-[9px] font-bold tracking-wider uppercase text-slate-500 mt-0.5">
+            <Text className="text-base font-semibold text-slate-400">＋</Text>
+            <Text className="text-[8px] font-bold tracking-widest uppercase text-slate-500 mt-0.5">
               CUSTOM
             </Text>
           </View>
@@ -88,5 +84,5 @@ export default function SessionSelector({
       </View>
     </View>
   );
-}
+});
 

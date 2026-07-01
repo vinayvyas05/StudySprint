@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 export function useFocusSession() {
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -6,7 +6,7 @@ export function useFocusSession() {
   const [elapsedTime, setElapsedTime] = useState(0);
   const [isRunning, setIsRunning] = useState(false);
 
-  const start = () => {
+  const start = useCallback(() => {
     if (intervalRef.current) return;
 
     setIsRunning(true);
@@ -14,25 +14,25 @@ export function useFocusSession() {
     intervalRef.current = setInterval(() => {
       setElapsedTime((prev) => prev + 1);
     }, 1000);
-  };
+  }, []);
 
-  const clearTimer = () => {
+  const clearTimer = useCallback(() => {
     if (!intervalRef.current) return;
 
     clearInterval(intervalRef.current);
     intervalRef.current = null;
-  };
+  }, []);
 
-  const stop = () => {
+  const stop = useCallback(() => {
     clearTimer();
     setIsRunning(false);
-  };
+  }, [clearTimer]);
 
-  const reset = () => {
+  const reset = useCallback(() => {
     clearTimer();
     setIsRunning(false);
     setElapsedTime(0);
-  };
+  }, [clearTimer]);
 
   useEffect(() => {
     return () => {

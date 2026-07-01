@@ -1,5 +1,5 @@
-import { useEffect, useRef } from "react";
-import { Animated, Text, View } from "react-native";
+import React from "react";
+import { Text, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 
 interface Props {
@@ -8,28 +8,9 @@ interface Props {
   phaseLabel: string;
   isRunning: boolean;
 }
-
-export default function CircularTimer({ timeLeft, phaseColor, phaseLabel, isRunning }: Props) {
+export default React.memo(function CircularTimer({ timeLeft, phaseColor, phaseLabel, isRunning }: Props) {
   const minutes = Math.floor(timeLeft / 60);
   const seconds = timeLeft % 60;
-
-  const scaleAnim = useRef(new Animated.Value(1)).current;
-
-  // Subtle pop on every second tick
-  useEffect(() => {
-    Animated.sequence([
-      Animated.timing(scaleAnim, {
-        toValue: 1.03,
-        duration: 100,
-        useNativeDriver: true,
-      }),
-      Animated.timing(scaleAnim, {
-        toValue: 1,
-        duration: 180,
-        useNativeDriver: true,
-      }),
-    ]).start();
-  }, [timeLeft]);
 
   const formattedTime = `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
 
@@ -62,17 +43,12 @@ export default function CircularTimer({ timeLeft, phaseColor, phaseLabel, isRunn
             style={{ marginBottom: 2, opacity: isRunning ? 0.8 : 0.5 }}
           />
 
-          <Animated.Text
+          <Text
             className="text-white text-5xl font-extrabold tracking-tighter"
-            style={[
-              { 
-                transform: [{ scale: scaleAnim }],
-                fontVariant: ["tabular-nums"],
-              }
-            ]}
+            style={{ fontVariant: ["tabular-nums"] }}
           >
             {formattedTime}
-          </Animated.Text>
+          </Text>
           
           <Text className="text-[9px] uppercase font-bold tracking-widest text-slate-400 mt-1">
             Remaining
@@ -81,5 +57,4 @@ export default function CircularTimer({ timeLeft, phaseColor, phaseLabel, isRunn
       </View>
     </View>
   );
-}
-
+});
