@@ -143,7 +143,9 @@ export default function SprintScreen() {
   // ─── Wrapped sprint handlers ──────────────────────────────────
   const handleSprintStart = useCallback(() => {
     startSprint();
-    beginActiveSession(selectedDuration);
+    // Set expiration to cover all 4 cycles and breaks (approx)
+    // It will be explicitly cleared by handleSprintComplete when finished.
+    beginActiveSession(selectedDuration * 4 + 20);
   }, [startSprint, beginActiveSession, selectedDuration]);
 
   const handleSprintPause = useCallback(() => {
