@@ -1,6 +1,7 @@
-import { useEffect } from "react";
-import { ScrollView, StyleSheet, View } from "react-native";
+import { useEffect, useCallback, useRef } from "react";
+import { ScrollView, StyleSheet, View, Text, Animated } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useFocusEffect } from "expo-router";
 
 import { useAuthStore } from "@/store/auth.store";
 import { useProgressStore } from "@/store/progress.store";
@@ -13,6 +14,19 @@ export default function ProgressScreen() {
   const user = useAuthStore((state) => state.user);
   const { stats, sessions, loadProgress } = useProgressStore();
 
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+  
+  useFocusEffect(
+    useCallback(() => {
+      fadeAnim.setValue(0);
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 250,
+        useNativeDriver: true,
+      }).start();
+    }, [fadeAnim])
+  );
+
   useEffect(() => {
     if (!user?.uid) return;
     loadProgress(user.uid);
@@ -24,16 +38,24 @@ export default function ProgressScreen() {
 
   return (
     <View style={styles.wrapper}>
-      {/* Galaxy Background */}
-      <View style={styles.galaxyBackground} />
 
       {/* Content */}
       <SafeAreaView style={styles.content}>
+        <Animated.View style={[{ flex: 1, opacity: fadeAnim }]}>
+          <View className="px-6 pt-10 pb-6">
+          <Text className="text-white text-3xl font-extrabold tracking-tight">
+            Progress
+          </Text>
+          <Text className="text-neutral-400 text-[10px] tracking-widest uppercase mt-0.5 font-bold">
+            {user?.name ? `${user.name.split(" ")[0]}'s Statistics` : "Your Statistics"}
+          </Text>
+        </View>
         <ScrollView contentContainerStyle={styles.container}>
           <LevelCard xp={stats.xp} level={stats.level} />
           <StatsGrid stats={stats} />
           <RecentSprints sessions={sessions} />
         </ScrollView>
+        </Animated.View>
       </SafeAreaView>
     </View>
   );
@@ -43,14 +65,7 @@ const styles = StyleSheet.create({
   wrapper: {
     flex: 1,
     position: "relative",
-    backgroundColor: "#0a0e27",
-  },
-  galaxyBackground: {
-    position: "absolute",
-    width: "100%",
-    height: "100%",
-    backgroundColor: "#0a0e27",
-    zIndex: 0,
+    backgroundColor: "#121212",
   },
   content: {
     flex: 1,
@@ -58,9 +73,9 @@ const styles = StyleSheet.create({
     position: "relative",
   },
   container: {
-    paddingHorizontal: 20,
-    paddingTop: 12,
-    paddingBottom: 32,
-    gap: 24,
+    paddingHorizontal: 24,
+    paddingTop: 0,
+    paddingBottom: 110,
+    gap: 20,
   },
 });

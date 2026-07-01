@@ -21,7 +21,7 @@ export default React.memo(function FocusTimer({
 }: FocusTimerProps) {
   return (
     <View 
-      className="items-center justify-center rounded-full bg-slate-900/40"
+      className="items-center justify-center rounded-full bg-neutral-900"
       style={{
         width: 240,
         height: 240,
@@ -29,7 +29,7 @@ export default React.memo(function FocusTimer({
         borderColor: "rgba(255, 255, 255, 0.05)",
       }}
     >
-      <View className="items-center justify-center bg-slate-950/60 rounded-full border border-white/5" style={{ width: 210, height: 210 }}>
+      <View className="items-center justify-center bg-neutral-950 rounded-full border border-white/5" style={{ width: 210, height: 210 }}>
         {/* Subtle decorative inner rings */}
         <View className="absolute border border-white/[0.02] rounded-full" style={{ width: 190, height: 190 }} />
         
@@ -37,7 +37,7 @@ export default React.memo(function FocusTimer({
           <Ionicons 
             name="infinite-outline" 
             size={24} 
-            color="#A78BFA"
+            color="#FFFFFF"
             style={{ marginBottom: 4, opacity: 0.8 }}
           />
 

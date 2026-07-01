@@ -16,7 +16,7 @@ export default React.memo(function CircularTimer({ timeLeft, phaseColor, phaseLa
 
   return (
     <View 
-      className="items-center justify-center rounded-full bg-slate-900/40"
+      className="items-center justify-center rounded-full bg-neutral-900"
       style={{
         width: 220,
         height: 220,
@@ -24,7 +24,7 @@ export default React.memo(function CircularTimer({ timeLeft, phaseColor, phaseLa
         borderColor: phaseColor,
       }}
     >
-      <View className="items-center justify-center bg-slate-950/65 rounded-full" style={{ width: 194, height: 194 }}>
+      <View className="items-center justify-center bg-neutral-950 rounded-full" style={{ width: 194, height: 194 }}>
         {/* Subtle decorative inner rings */}
         <View className="absolute border border-white/5 rounded-full" style={{ width: 180, height: 180 }} />
         <View className="absolute border border-white/10 border-dashed rounded-full" style={{ width: 166, height: 166 }} />

@@ -13,7 +13,7 @@
     "android": {
       "package": "com.rvTechSol.studysprint",
       "navigationBar": {
-        "backgroundColor": "#060918",
+        "backgroundColor": "#121212",
         "barStyle": "light-content"
       },
       "adaptiveIcon": {

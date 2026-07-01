@@ -1,101 +1,38 @@
-import { StyleSheet, View } from "react-native";
-import { Surface, Text, ProgressBar } from "react-native-paper";
+import { View, Text } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 
 interface Props {
   xp: number;
   level: number;
 }
 
-export function LevelCard({
-  xp,
-  level,
-}: Props) {
-  const currentLevelXp =
-    (level - 1) * 100;
-
+export function LevelCard({ xp, level }: Props) {
+  const currentLevelXp = (level - 1) * 100;
   const nextLevelXp = level * 100;
-
-  const progress =
-    (xp - currentLevelXp) /
-    (nextLevelXp - currentLevelXp);
+  const progress = ((xp - currentLevelXp) / (nextLevelXp - currentLevelXp)) * 100;
 
   return (
-    <Surface
-      elevation={0}
-      style={styles.container}
-    >
-      <Text style={styles.badge}>
-        LEVEL {level}
-      </Text>
-
-      <Text style={styles.xp}>
-        {xp}
-      </Text>
-
-      <Text style={styles.xpLabel}>
-        Total XP
-      </Text>
-
-      <ProgressBar
-        progress={progress}
-        color="#FFFFFF"
-        style={styles.progress}
-      />
-
-      <View style={styles.footer}>
-        <Text style={styles.footerText}>
-          {nextLevelXp - xp} XP to next
-          level
-        </Text>
-
-        <Text style={styles.footerText}>
-          Level {level + 1}
-        </Text>
+    <View className="bg-[#161616] rounded-[24px] p-6 mb-2">
+      <View className="flex-row items-center justify-between mb-4">
+        <View className="flex-row items-center gap-2">
+          <Ionicons name="star" size={16} color="#FFFFFF" />
+          <Text className="text-[#A1A1AA] text-[12px] font-bold tracking-widest uppercase">Level {level}</Text>
+        </View>
       </View>
-    </Surface>
+      
+      <View className="flex-row items-end gap-2 mb-6">
+        <Text className="text-white text-5xl font-extrabold tracking-tighter">{xp}</Text>
+        <Text className="text-[#71717A] text-lg font-bold pb-1.5">Total XP</Text>
+      </View>
+
+      <View className="h-2 w-full bg-white/10 rounded-full overflow-hidden mb-3">
+        <View className="h-full bg-white rounded-full" style={{ width: `${Math.min(100, Math.max(0, progress))}%` }} />
+      </View>
+
+      <View className="flex-row items-center justify-between">
+        <Text className="text-[#A1A1AA] text-[13px] font-medium">{nextLevelXp - xp} XP to next level</Text>
+        <Text className="text-[#A1A1AA] text-[13px] font-medium">Level {level + 1}</Text>
+      </View>
+    </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    backgroundColor: "#1a1d2e",
-    borderRadius: 32,
-    padding: 24,
-  },
-
-  badge: {
-    color: "#94A3B8",
-    letterSpacing: 2,
-    fontWeight: "700",
-  },
-
-  xp: {
-    color: "#FFF",
-    fontSize: 52,
-    fontWeight: "800",
-    marginTop: 12,
-  },
-
-  xpLabel: {
-    color: "#64748B",
-    marginBottom: 24,
-  },
-
-
-  progress: {
-    height: 10,
-    borderRadius: 999,
-    backgroundColor: "rgba(255,255,255,0.2)",
-  },
-
-  footer: {
-    marginTop: 16,
-    flexDirection: "row",
-    justifyContent: "space-between",
-  },
-
-  footerText: {
-    color: "#64748B",
-    fontSize: 13,
-  },
-});

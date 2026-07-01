@@ -1,6 +1,6 @@
 import { Tabs } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
-import { Platform } from "react-native";
+import { Platform, Dimensions } from "react-native";
 import { NavigationBar } from "expo-navigation-bar";
 
 export default function TabsLayout() {
@@ -8,89 +8,98 @@ export default function TabsLayout() {
     <>
       {Platform.OS === "android" && <NavigationBar style="dark" />}
       <Tabs
-      screenOptions={{
-        headerShown: false,
-        tabBarShowLabel: true,
-        tabBarActiveTintColor: "#FFFFFF", // White for monochrome dark mode
-        tabBarInactiveTintColor: "#475569", // Slate grey for inactive tabs
-        tabBarStyle: {
-          backgroundColor: "#060918", // Deep space black-blue matching page backgrounds
-          borderTopWidth: 1,
-          borderTopColor: "rgba(255, 255, 255, 0.05)",
-          height: Platform.OS === 'ios' ? 88 : 66,
-          paddingTop: 8,
-          paddingBottom: Platform.OS === 'ios' ? 28 : 10,
-          elevation: 8,
-          shadowColor: "#000",
-          shadowOffset: { width: 0, height: -4 },
-          shadowOpacity: 0.15,
-          shadowRadius: 8,
-        },
-        tabBarLabelStyle: {
-          fontSize: 10,
-          fontWeight: "700",
-          letterSpacing: 0.5,
-          textTransform: "uppercase",
-          marginTop: 2,
-        },
-      }}
-    >
-      <Tabs.Screen
-        name="sprint"
-        options={{
-          title: "Sprint",
-          tabBarIcon: ({ focused, color }) => (
-            <Ionicons
-              name={focused ? "timer" : "timer-outline"}
-              size={24}
-              color={color}
-            />
-          ),
-        }}
-      />
+        screenOptions={{
+          headerShown: false,
+          tabBarShowLabel: true,
+          tabBarActiveTintColor: "#FFFFFF",
+          tabBarInactiveTintColor: "#52525B",
+          tabBarStyle: {
+            position: "absolute",
+            bottom: Platform.OS === "ios" ? 32 : 32,
 
-      <Tabs.Screen
-        name="progress"
-        options={{
-          title: "Progress",
-          tabBarIcon: ({ focused, color }) => (
-            <Ionicons
-              name={focused ? "stats-chart" : "stats-chart-outline"}
-              size={24}
-              color={color}
-            />
-          ),
-        }}
-      />
+            left: 0,
+            right: 0,
 
-      <Tabs.Screen
-        name="community"
-        options={{
-          title: "Community",
-          tabBarIcon: ({ focused, color }) => (
-            <Ionicons
-              name={focused ? "people" : "people-outline"}
-              size={24}
-              color={color}
-            />
-          ),
+            width: "88%",
+            marginHorizontal: "6%",
+            alignSelf: "center",
+            backgroundColor: "#000000",
+            borderTopWidth: 0,
+            borderRadius: 40,
+            height: 68,
+            paddingTop: Platform.OS === "ios" ? 20 : 8,
+            paddingBottom: Platform.OS === "ios" ? 20 : 8,
+            elevation: 10,
+            shadowColor: "#000",
+            shadowOffset: { width: 0, height: 10 },
+            shadowOpacity: 0.5,
+            shadowRadius: 20,
+          },
+          tabBarLabelStyle: {
+            fontSize: 10,
+            fontWeight: "700",
+            letterSpacing: 0.5,
+            textTransform: "uppercase",
+            marginTop: 2,
+          },
         }}
-      />
+      >
+        <Tabs.Screen
+          name="sprint"
+          options={{
+            title: "Sprint",
+            tabBarIcon: ({ focused, color }) => (
+              <Ionicons
+                name={focused ? "timer" : "timer-outline"}
+                size={24}
+                color={color}
+              />
+            ),
+          }}
+        />
 
-      <Tabs.Screen
-        name="battles"
-        options={{
-          title: "Battles",
-          tabBarIcon: ({ focused, color }) => (
-            <Ionicons
-              name={focused ? "trophy" : "trophy-outline"}
-              size={24}
-              color={color}
-            />
-          ),
-        }}
-      />
-    </Tabs>
+        <Tabs.Screen
+          name="progress"
+          options={{
+            title: "Progress",
+            tabBarIcon: ({ focused, color }) => (
+              <Ionicons
+                name={focused ? "stats-chart" : "stats-chart-outline"}
+                size={24}
+                color={color}
+              />
+            ),
+          }}
+        />
+
+        <Tabs.Screen
+          name="community"
+          options={{
+            title: "Community",
+            tabBarIcon: ({ focused, color }) => (
+              <Ionicons
+                name={focused ? "people" : "people-outline"}
+                size={24}
+                color={color}
+              />
+            ),
+          }}
+        />
+
+        <Tabs.Screen
+          name="battles"
+          options={{
+            title: "Battles",
+            tabBarIcon: ({ focused, color }) => (
+              <Ionicons
+                name={focused ? "trophy" : "trophy-outline"}
+                size={24}
+                color={color}
+              />
+            ),
+          }}
+        />
+      </Tabs>
     </>
   );
 }

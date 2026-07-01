@@ -1,77 +1,28 @@
 import React, { memo } from "react";
-import { StyleSheet, View } from "react-native";
-import { Card, Text } from "react-native-paper";
+import { View, Text } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 
-function SprintCardComponent({
-  session,
-}: any) {
-  const date =
-    session.completedAt?.toDate?.()
-      ?.toLocaleDateString() ??
-    "Recently";
+function SprintCardComponent({ session }: any) {
+  const date = session.completedAt?.toDate?.()?.toLocaleDateString() ?? "Recently";
 
   return (
-    <Card
-      mode="contained"
-      style={styles.card}
-    >
-      <Card.Content>
-        <View style={styles.row}>
-          <Text style={styles.duration}>
-            {session.focusMinutes}m
-          </Text>
-
-          <Text style={styles.xp}>
-            +{session.focusMinutes} XP
-          </Text>
+    <View className="bg-[#161616] rounded-[24px] p-5 mb-4 w-full flex-row items-center justify-between">
+      <View className="flex-row items-center gap-4">
+        <View className="w-12 h-12 rounded-full bg-white/[0.06] items-center justify-center">
+           <Ionicons name="timer" size={20} color="#FFFFFF" />
         </View>
-
-        <Text style={styles.label}>
-          Focus Session
-        </Text>
-
-        <Text style={styles.date}>
-          {date}
-        </Text>
-      </Card.Content>
-    </Card>
+        <View>
+           <Text className="text-white text-[16px] font-bold" numberOfLines={1}>Focus Session</Text>
+           <Text className="text-[#A1A1AA] text-[13px] mt-0.5 font-medium">{date}</Text>
+        </View>
+      </View>
+      
+      <View className="items-end">
+        <Text className="text-white text-[18px] font-extrabold">{session.focusMinutes}m</Text>
+        <Text className="text-[#A1A1AA] text-[12px] font-bold">+{session.focusMinutes} XP</Text>
+      </View>
+    </View>
   );
 }
 
-export const SprintCard = memo(
-  SprintCardComponent
-);
-
-const styles = StyleSheet.create({
-  card: {
-    borderRadius: 24,
-    marginBottom: 12,
-  },
-
-  row: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-
-  duration: {
-    fontSize: 32,
-    fontWeight: "800",
-  },
-
-  xp: {
-    color: "#FFFFFF",
-    fontWeight: "700",
-  },
-
-  label: {
-    marginTop: 8,
-    opacity: 0.7,
-  },
-
-  date: {
-    marginTop: 16,
-    opacity: 0.5,
-    fontSize: 12,
-  },
-});
+export const SprintCard = memo(SprintCardComponent);

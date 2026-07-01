@@ -1,7 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import { ActivityIndicator, Text, TouchableOpacity, View } from "react-native";
 
-// ─── Joined group row (inside "Your Halls" section card) ─────
+// ─── Joined group row (inside "Your groups" section) ─────
 type JoinedRowProps = {
   name: string;
   category: string;
@@ -23,71 +23,42 @@ export function JoinedGroupRow({
   isLoading,
   onLeave,
   onDelete,
-  isLast,
 }: JoinedRowProps) {
   return (
-    <View
-      className={`flex-row items-center px-4 py-3.5 ${
-        isLast ? "" : "border-b border-white/[0.04]"
-      }`}
+    <TouchableOpacity
+      activeOpacity={0.7}
+      onPress={isOwner ? onDelete : onLeave} // Simple action trigger for now
+      className="bg-[#161616] rounded-[24px] p-5 mb-4 w-full"
     >
-      {/* Text */}
-      <View className="flex-1">
-        <Text className="text-slate-100 text-[15px] font-semibold" numberOfLines={1}>
-          {name}
-        </Text>
-        <View className="flex-row items-center gap-1.5 mt-0.5">
-          {category ? (
-            <Text className="text-slate-400 text-[11px] font-semibold">
-              {category}
-            </Text>
-          ) : null}
-          <Text className="text-slate-600 text-[11px]">·</Text>
-          <Text className="text-slate-500 text-[11px]">
-            {memberCount} {memberCount === 1 ? "member" : "members"}
-          </Text>
-          {focusingCount > 0 && (
-            <>
-              <Text className="text-slate-600 text-[11px]">·</Text>
-              <View className="flex-row items-center gap-1">
-                <View className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                <Text className="text-emerald-400 text-[11px] font-semibold">
-                  {focusingCount} focusing
-                </Text>
-              </View>
-            </>
-          )}
+      <View className="flex-row items-center justify-between mb-4">
+        {/* Left side: Icon + Title/Members */}
+        <View className="flex-row items-center gap-4 flex-1">
+           {/* Big Icon Placeholder */}
+           <View className="w-14 h-14 rounded-full bg-[#1A3622] items-center justify-center">
+             <Ionicons name="hourglass" size={24} color="#4ADE80" />
+           </View>
+           <View className="flex-1 pr-4">
+             <Text className="text-white text-[17px] font-bold" numberOfLines={1}>{name}</Text>
+             <Text className="text-[#A1A1AA] text-[13px] mt-0.5 font-medium">{memberCount} members</Text>
+           </View>
+        </View>
+        {/* Right side: Icons */}
+        <View className="flex-row items-center gap-3">
+          <Ionicons name="pin" size={20} color="#52525B" />
+          <Ionicons name="chevron-forward" size={20} color="#52525B" />
         </View>
       </View>
-
-      {/* Actions */}
-      {isLoading ? (
-        <ActivityIndicator size="small" color="#64748B" />
-      ) : (
-        <View className="flex-row items-center gap-2">
-          {isOwner && (
-            <TouchableOpacity
-              onPress={onDelete}
-              className="w-8 h-8 rounded-lg bg-red-500/10 items-center justify-center"
-              activeOpacity={0.6}
-            >
-              <Ionicons name="trash-outline" size={14} color="#EF4444" />
-            </TouchableOpacity>
-          )}
-          <TouchableOpacity
-            onPress={onLeave}
-            className="w-8 h-8 rounded-lg bg-white/[0.05] items-center justify-center"
-            activeOpacity={0.6}
-          >
-            <Ionicons name="exit-outline" size={15} color="#64748B" />
-          </TouchableOpacity>
-        </View>
-      )}
-    </View>
+      
+      {/* Bottom: Focusing */}
+      <View className="flex-row items-center justify-center gap-2 border-t border-white/[0.04] pt-4">
+         <View className="w-2 h-2 rounded-full bg-[#4ADE80]" />
+         <Text className="text-white text-[13px] font-medium">{focusingCount} focusing now</Text>
+      </View>
+    </TouchableOpacity>
   );
 }
 
-// ─── Suggested group row (inside "Discover" section card) ─────
+// ─── Suggested group row (inside "Suggested groups" section) ─────
 type SuggestedRowProps = {
   name: string;
   category: string;
@@ -102,57 +73,31 @@ export function SuggestedGroupRow({
   name,
   category,
   memberCount,
-  focusingCount,
   isLoading,
   onJoin,
-  isLast,
 }: SuggestedRowProps) {
   return (
-    <View
-      className={`flex-row items-center px-4 py-3.5 ${
-        isLast ? "" : "border-b border-white/[0.04]"
-      }`}
-    >
-      {/* Text */}
-      <View className="flex-1">
-        <Text className="text-slate-100 text-[15px] font-semibold" numberOfLines={1}>
-          {name}
-        </Text>
-        <View className="flex-row items-center gap-1.5 mt-0.5">
-          {category ? (
-            <Text className="text-indigo-400 text-[11px] font-semibold">
-              {category}
-            </Text>
-          ) : null}
-          <Text className="text-slate-600 text-[11px]">·</Text>
-          <Text className="text-slate-500 text-[11px]">
-            {memberCount} {memberCount === 1 ? "member" : "members"}
-          </Text>
-          {focusingCount > 0 && (
-            <>
-              <Text className="text-slate-600 text-[11px]">·</Text>
-              <View className="flex-row items-center gap-1">
-                <View className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                <Text className="text-emerald-400 text-[11px] font-semibold">
-                  {focusingCount} focusing
-                </Text>
-              </View>
-            </>
-          )}
+    <View className="bg-[#161616] rounded-[24px] p-5 mb-4 w-full flex-row items-center justify-between">
+      <View className="flex-row items-center gap-4 flex-1 pr-4">
+        <View className="w-14 h-14 rounded-full bg-[#3F111B] items-center justify-center">
+           <Ionicons name="school" size={24} color="#FDA4AF" />
+        </View>
+        <View className="flex-1">
+           <Text className="text-white text-[16px] font-bold" numberOfLines={1}>{name}</Text>
+           <Text className="text-[#A1A1AA] text-[13px] mt-0.5 font-medium">{memberCount} members</Text>
         </View>
       </View>
-
-      {/* Join Button */}
+      
       <TouchableOpacity
         onPress={onJoin}
-        className="px-4 py-2 rounded-xl bg-white/[0.06] border border-white/10"
         disabled={isLoading}
-        activeOpacity={0.7}
+        activeOpacity={0.8}
+        className="bg-white px-6 py-2.5 rounded-full items-center justify-center min-w-[70px]"
       >
         {isLoading ? (
-          <ActivityIndicator size="small" color="#94A3B8" />
+          <ActivityIndicator size="small" color="#000" />
         ) : (
-          <Text className="text-slate-300 text-[13px] font-bold">Join</Text>
+          <Text className="text-black font-bold text-[14px]">Join</Text>
         )}
       </TouchableOpacity>
     </View>

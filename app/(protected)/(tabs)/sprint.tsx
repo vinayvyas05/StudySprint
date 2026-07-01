@@ -2,8 +2,9 @@ import CircularTimer from "@/components/sprint/CircularTimer";
 import SessionSelector from "@/components/sprint/SessionSelector";
 import StartButton from "@/components/sprint/StartButton";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Alert, StatusBar, Text, View } from "react-native";
+import { Alert, StatusBar, Text, View, Animated } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useFocusEffect } from "expo-router";
 import { ModeSelector } from "@/components/sprint/ModeSelector";
 import type { SessionMode } from "../../../src/types/focus.types";
 import FocusTimer from "@/components/sprint/FocusTimer";
@@ -17,34 +18,46 @@ import {
 } from "@/services/active-session.service";
 import { getUserGroups } from "@/services/group.service";
 
-// ─── Per-phase display config ────────────────────────────────────
 const PHASE_CONFIG = {
   focus: {
     label: "Focus Session",
     subtitle: "Stay dedicated, block out distractions",
-    color: "#8B5CF6", // Violet (Matches deep galaxy theme)
+    color: "#FFFFFF", // White
   },
   shortBreak: {
     label: "Short Break",
     subtitle: "Rest, stretch, grab a glass of water",
-    color: "#10B981", // Emerald
+    color: "#A3A3A3", // Neutral-400 Gray
   },
   longBreak: {
     label: "Long Break",
     subtitle: "Recharge your energy, you've done great",
-    color: "#06B6D4", // Cyan
+    color: "#737373", // Neutral-500 Gray
   },
   completed: {
     label: "Sprint Completed",
     subtitle: "Congratulations! Sessions finished",
-    color: "#F59E0B", // Amber
+    color: "#FFFFFF", // White
   },
 } as const;
 
 export default function SprintScreen() {
   const user = useAuthStore((state) => state.user);
   const [mode, setMode] = useState<SessionMode>("sprint");
-  const [selectedDuration, setSelectedDuration] = useState(1); // after testing is done set it to 25
+  const [selectedDuration, setSelectedDuration] = useState(1);
+
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+  
+  useFocusEffect(
+    useCallback(() => {
+      fadeAnim.setValue(0);
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 250,
+        useNativeDriver: true,
+      }).start();
+    }, [fadeAnim])
+  );
 
   // ─── Track user's groups for active session ────────────
   const userGroupIdsRef = useRef<string[]>([]);
@@ -246,13 +259,12 @@ export default function SprintScreen() {
   }, [currentCycle, phase.color]);
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: "#0a0e27" }}>
-      <StatusBar barStyle="light-content" backgroundColor="#0a0e27" />
+    <SafeAreaView style={{ flex: 1, backgroundColor: "#121212" }}>
+      <StatusBar barStyle="light-content" backgroundColor="#121212" />
 
-      {/* Main Container */}
-      <View
-        style={{ flex: 1, backgroundColor: "#0a0e27" }}
-        className="px-6 py-4"
+      <Animated.View
+        style={[{ flex: 1, backgroundColor: "#121212", opacity: fadeAnim }]}
+        className="px-6 pt-10 pb-36"
       >
         {/* ── Page Header ── */}
         <View className="flex-row items-center justify-between pb-6">
@@ -260,8 +272,8 @@ export default function SprintScreen() {
             <Text className="text-white text-3xl font-extrabold tracking-tight">
               Timer
             </Text>
-            <Text className="text-slate-400 text-[10px] tracking-widest uppercase mt-0.5 font-bold">
-              Deep Galaxy Focus
+            <Text className="text-neutral-400 text-[10px] tracking-widest uppercase mt-0.5 font-bold">
+              Productivity Focus
             </Text>
           </View>
           <View className="bg-white/5 border border-white/10 rounded-2xl px-3 py-1 flex-row items-center gap-1.5">
@@ -319,14 +331,15 @@ export default function SprintScreen() {
 
           <StartButton
             isRunning={mode === "sprint" ? isSprintRunning : isFocusRunning}
+            hasStarted={mode === "sprint" ? stateRef.current.isSprintActive : stateRef.current.isFocusActive}
             onStart={mode === "sprint" ? handleSprintStart : handleFocusStart}
             onPause={mode === "sprint" ? handleSprintPause : handleFocusStop}
             onReset={mode === "sprint" ? handleSprintReset : handleFocusReset}
-            phaseColor={mode === "sprint" ? phase.color : "#8B5CF6"}
+            phaseColor={mode === "sprint" ? phase.color : "#FFFFFF"}
             label={mode === "sprint" ? "Start Sprint" : "Start Focus"}
           />
         </View>
-      </View>
+      </Animated.View>
     </SafeAreaView>
   );
 }

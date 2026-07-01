@@ -1,5 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
-import { useCallback, useMemo, useState } from "react";
+import { useFocusEffect } from "expo-router";
+import { useCallback, useMemo, useState, useRef } from "react";
 import {
   ActivityIndicator,
   Alert,
@@ -10,6 +11,7 @@ import {
   TextInput,
   TouchableOpacity,
   View,
+  Animated,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -38,6 +40,19 @@ export default function CommunityScreen() {
     create,
     remove,
   } = useCommunity();
+
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+  
+  useFocusEffect(
+    useCallback(() => {
+      fadeAnim.setValue(0);
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 250,
+        useNativeDriver: true,
+      }).start();
+    }, [fadeAnim])
+  );
 
   const [search, setSearch] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
@@ -113,40 +128,38 @@ export default function CommunityScreen() {
     [leave]
   );
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: "#0a0e27" }}>
-      <StatusBar barStyle="light-content" backgroundColor="#0a0e27" />
+    <SafeAreaView style={{ flex: 1, backgroundColor: "#121212" }}>
+      <StatusBar barStyle="light-content" backgroundColor="#121212" />
 
-      <View style={{ flex: 1, backgroundColor: "#0a0e27" }}>
+      <View style={{ flex: 1, backgroundColor: "#121212" }}>
+        <Animated.View style={[{ flex: 1, opacity: fadeAnim }]}>
         {/* ── Page Header ── */}
-        <View className="flex-row items-center justify-between px-6 pt-2 pb-5">
-          <Text className="text-white text-2xl font-extrabold tracking-tight">
-            Study Halls
+        <View className="flex-row items-center justify-between px-6 pt-10 pb-6">
+          <Text className="text-white text-xl font-bold tracking-tight">
+            Focus Groups
           </Text>
           <TouchableOpacity
-            onPress={() => setModalVisible(true)}
-            className="flex-row items-center gap-1.5 px-4 py-2 rounded-xl bg-white/[0.06] border border-white/10"
+            className="flex-row items-center gap-2 px-4 py-2 rounded-full bg-white/[0.06]"
             activeOpacity={0.7}
           >
-            <Ionicons name="add" size={16} color="#94A3B8" />
-            <Text className="text-slate-300 text-[13px] font-bold">
-              Create
-            </Text>
+            <Ionicons name="chatbubble-ellipses-outline" size={16} color="#A1A1AA" />
+            <Text className="text-[#A1A1AA] text-[14px] font-medium">Help</Text>
           </TouchableOpacity>
         </View>
 
         {/* ── Search ── */}
-        <View className="flex-row items-center bg-white/[0.04] border border-white/[0.06] rounded-2xl mx-6 px-4 py-2.5 gap-3 mb-5">
-          <Ionicons name="search" size={15} color="#475569" />
+        <View className="flex-row items-center bg-[#161616] rounded-2xl mx-6 px-4 py-3 gap-3 mb-6">
+          <Ionicons name="search" size={18} color="#52525B" />
           <TextInput
-            className="flex-1 text-slate-100 text-sm"
-            placeholder="Search study halls..."
-            placeholderTextColor="#475569"
+            className="flex-1 text-white text-[15px]"
+            placeholder="Search groups..."
+            placeholderTextColor="#52525B"
             value={search}
             onChangeText={setSearch}
           />
           {search.length > 0 && (
             <TouchableOpacity onPress={() => setSearch("")} activeOpacity={0.6}>
-              <Ionicons name="close-circle" size={15} color="#475569" />
+              <Ionicons name="close-circle" size={18} color="#52525B" />
             </TouchableOpacity>
           )}
         </View>
@@ -172,41 +185,43 @@ export default function CommunityScreen() {
         ) : (
           <ScrollView
             showsVerticalScrollIndicator={false}
-            contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 40 }}
+            contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 110 }}
             refreshControl={
               <RefreshControl
                 refreshing={refreshing}
                 onRefresh={onRefresh}
                 tintColor="#94A3B8"
                 colors={["#94A3B8"]}
-                progressBackgroundColor="#0a0e27"
+                progressBackgroundColor="#121212"
               />
             }
           >
             {/* ── YOUR HALLS section ── */}
-            <View className="mb-6">
-              <View className="flex-row items-center justify-between mb-3">
-                <Text className="text-white text-[17px] font-bold">
-                  Your Halls
+            <View className="mb-8">
+              <View className="flex-row items-center justify-between mb-4">
+                <Text className="text-white text-[18px] font-bold">
+                  Your groups
                 </Text>
-                <Text className="text-slate-500 text-[12px] font-medium">
-                  {joinedGroups.length} joined
-                </Text>
+                <TouchableOpacity onPress={() => setModalVisible(true)}>
+                  <Text className="text-[#4ADE80] text-[15px] font-medium">
+                    + Create Group
+                  </Text>
+                </TouchableOpacity>
               </View>
 
               {joinedGroups.length === 0 ? (
-                <View className="bg-white/[0.03] border border-white/[0.05] rounded-2xl overflow-hidden">
+                <View className="bg-[#161616] rounded-[24px] overflow-hidden">
                   <EmptyState
                     message={
                       search
-                        ? "No joined halls match your search"
-                        : "You haven't joined any study halls yet"
+                        ? "No joined groups match your search"
+                        : "You haven't joined any groups yet"
                     }
                     icon="people-outline"
                   />
                 </View>
               ) : (
-                <View className="bg-white/[0.03] border border-white/[0.05] rounded-2xl overflow-hidden">
+                <View>
                   {joinedGroups.map((group, index) => (
                     <JoinedGroupRow
                       key={group.id}
@@ -227,29 +242,30 @@ export default function CommunityScreen() {
 
             {/* ── DISCOVER section ── */}
             <View>
-              <View className="flex-row items-center justify-between mb-3">
-                <Text className="text-white text-[17px] font-bold">
-                  Discover
+              <View className="flex-row items-center justify-between mb-4">
+                <Text className="text-white text-[18px] font-bold">
+                  Suggested groups
                 </Text>
-                <Text className="text-slate-500 text-[12px] font-medium">
-                  {suggestedGroups.length}{" "}
-                  {suggestedGroups.length === 1 ? "hall" : "halls"}
-                </Text>
+                <TouchableOpacity>
+                  <Text className="text-[#4ADE80] text-[15px] font-medium">
+                    View all
+                  </Text>
+                </TouchableOpacity>
               </View>
 
               {suggestedGroups.length === 0 ? (
-                <View className="bg-white/[0.03] border border-white/[0.05] rounded-2xl overflow-hidden">
+                <View className="bg-[#161616] rounded-[24px] overflow-hidden">
                   <EmptyState
                     message={
                       search
-                        ? "No halls match your search"
-                        : "All halls have been joined — create a new one!"
+                        ? "No groups match your search"
+                        : "All groups have been joined — create a new one!"
                     }
                     icon={search ? "search-outline" : "telescope-outline"}
                   />
                 </View>
               ) : (
-                <View className="bg-white/[0.03] border border-white/[0.05] rounded-2xl overflow-hidden">
+                <View>
                   {suggestedGroups.map((group, index) => (
                     <SuggestedGroupRow
                       key={group.id}
@@ -267,6 +283,7 @@ export default function CommunityScreen() {
             </View>
           </ScrollView>
         )}
+        </Animated.View>
       </View>
 
       {/* ── Create Group Modal ── */}

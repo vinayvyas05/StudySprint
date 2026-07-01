@@ -1,31 +1,26 @@
-import { View } from "react-native";
-import { FlatList } from "react-native";
-import { Text } from "react-native-paper";
-
+import { View, Text } from "react-native";
 import { SprintCard } from "./SprintCard";
 
-export function RecentSprints({
-  sessions,
-}: any) {
+export function RecentSprints({ sessions }: any) {
   return (
-    <View>
-      <Text
-        variant="headlineSmall"
-        style={{
-          marginBottom: 16,
-        }}
-      >
-        Recent Sprints
-      </Text>
+    <View className="mt-2">
+      <View className="flex-row items-center justify-between mb-4">
+        <Text className="text-white text-[18px] font-bold">
+          Recent Sprints
+        </Text>
+      </View>
 
-      <FlatList
-        scrollEnabled={false}
-        data={sessions}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <SprintCard session={item} />
-        )}
-      />
+      {!sessions || sessions.length === 0 ? (
+        <View className="bg-[#161616] rounded-[24px] p-8 items-center justify-center">
+           <Text className="text-[#A1A1AA] text-sm font-medium">No recent sprints found.</Text>
+        </View>
+      ) : (
+        <View>
+          {sessions.map((item: any) => (
+            <SprintCard key={item.id} session={item} />
+          ))}
+        </View>
+      )}
     </View>
   );
 }
