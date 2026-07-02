@@ -11,10 +11,12 @@ import {
   Timestamp,
   updateDoc,
   where,
+  getDoc,
 } from "firebase/firestore";
 
 import { db } from "@/config/firebase";
 import { Group, CreateGroupPayload } from "@/types/group.types";
+import { UserProfile } from "@/types/user.types";
 
 /**
  * Subscribe to real-time focusing counts per group.
@@ -168,3 +170,61 @@ export const getUserGroups = async (
     (doc) => doc.data().groupId as string
   );
 };
+
+export const getGroupById = async (groupId: string): Promise<Group | null> => {
+  const docRef = doc(db, "groups", groupId);
+  const snapshot = await getDoc(docRef);
+  if (!snapshot.exists()) return null;
+  return { id: snapshot.id, ...snapshot.data() } as Group;
+};
+
+export const getGroupMembersWithProfiles = async (groupId: string): Promise<UserProfile[]> => {
+  const membershipQuery = query(
+    collection(db, "groupMembers"),
+    where("groupId", "==", groupId)
+  );
+  const snapshot = await getDocs(membershipQuery);
+  const userIds = snapshot.docs.map(doc => doc.data().userId as string);
+  
+  if (userIds.length === 0) return [];
+  
+  const profiles: UserProfile[] = [];
+  const chunkSize = 30;
+  for (let i = 0; i < userIds.length; i += chunkSize) {
+    const chunk = userIds.slice(i, i + chunkSize);
+    const usersQuery = query(collection(db, "users"), where("uid", "in", chunk));
+    const userSnap = await getDocs(usersQuery);
+    userSnap.forEach(doc => profiles.push(doc.data() as UserProfile));
+  }
+  return profiles;
+};
+
+export function subscribeToGroupFocusingUsers(
+  groupId: string,
+  onUpdate: (focusingUserIds: Set<string>) => void
+) {
+  const sessionsQuery = query(
+    collection(db, "activeSessions"),
+    where("isFocusing", "==", true)
+  );
+
+  return onSnapshot(sessionsQuery, (snapshot) => {
+    const focusingUsers = new Set<string>();
+    const now = Timestamp.now();
+
+    snapshot.docs.forEach((doc) => {
+      const data = doc.data();
+      const expiresAt = data.expiresAt as Timestamp | undefined;
+
+      if (expiresAt && expiresAt.toMillis() < now.toMillis()) return;
+
+      const groupIds = (data.groupIds as string[]) || (data.groupId ? [data.groupId] : []);
+      
+      if (groupIds.includes(groupId)) {
+        focusingUsers.add(data.userId as string);
+      }
+    });
+
+    onUpdate(focusingUsers);
+  });
+}
