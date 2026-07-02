@@ -8,7 +8,6 @@ import { useProgressStore } from "@/store/progress.store";
 
 import { LevelCard } from "../../../src/components/progress/LevelCard";
 import { AttributesCard } from "../../../src/components/progress/AttributesCard";
-import { RecentSprints } from "../../../src/components/progress/RecentSprints";
 import { StatsGrid } from "../../../src/components/progress/StatsGrid";
 
 export default function ProgressScreen() {
@@ -67,7 +66,6 @@ export default function ProgressScreen() {
           <LevelCard stats={stats} />
           <AttributesCard stats={stats} />
           <StatsGrid stats={stats} />
-          <RecentSprints sessions={sessions} />
         </ScrollView>
         </Animated.View>
       </SafeAreaView>
