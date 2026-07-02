@@ -22,6 +22,7 @@ export default React.memo(function StartButton({
   label,
 }: Props) {
   const isWhiteBg = phaseColor.toUpperCase() === "#FFFFFF";
+  const stopLabel = label.replace("Start", "End");
 
   // Initial State: Only Start Button
   if (!hasStarted) {
@@ -51,8 +52,7 @@ export default React.memo(function StartButton({
         activeOpacity={0.7}
         className="flex-1 h-14 bg-[#161616] border border-white/5 rounded-4xl flex-row items-center justify-center gap-2"
       >
-        {/* <Ionicons name="square" size={16} color="#EF4444" /> */}
-        <Text className="text-white text-base font-bold">Stop Sprint</Text>
+        <Text className="text-white text-base font-bold">{stopLabel}</Text>
       </TouchableOpacity>
 
       {/* Pause/Resume Button */}

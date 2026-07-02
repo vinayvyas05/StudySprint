@@ -180,6 +180,10 @@ export default function SprintScreen() {
     beginActiveSession(480); // 8h max for open-ended focus
   }, [startFocus, beginActiveSession]);
 
+  const handleFocusPause = useCallback(() => {
+    stopFocus();
+  }, [stopFocus]);
+
   const handleFocusStop = useCallback(async () => {
     stopFocus();
     
@@ -200,13 +204,9 @@ export default function SprintScreen() {
       await updateUserStats(user.uid, minutes, false, 0);
     }
     
-    await endActiveSession();
-  }, [stopFocus, endActiveSession, elapsedTime, user]);
-
-  const handleFocusReset = useCallback(() => {
     resetFocus();
-    endActiveSession();
-  }, [resetFocus, endActiveSession]);
+    await endActiveSession();
+  }, [stopFocus, resetFocus, endActiveSession, elapsedTime, user]);
 
   const phase = PHASE_CONFIG[currentPhase] ?? PHASE_CONFIG.focus;
 
@@ -355,8 +355,8 @@ export default function SprintScreen() {
             isRunning={mode === "sprint" ? isSprintRunning : isFocusRunning}
             hasStarted={mode === "sprint" ? stateRef.current.isSprintActive : stateRef.current.isFocusActive}
             onStart={mode === "sprint" ? handleSprintStart : handleFocusStart}
-            onPause={mode === "sprint" ? handleSprintPause : handleFocusStop}
-            onReset={mode === "sprint" ? handleSprintReset : handleFocusReset}
+            onPause={mode === "sprint" ? handleSprintPause : handleFocusPause}
+            onReset={mode === "sprint" ? handleSprintReset : handleFocusStop}
             phaseColor={mode === "sprint" ? phase.color : "#FFFFFF"}
             label={mode === "sprint" ? "Start Sprint" : "Start Focus"}
           />
