@@ -1,5 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
-import { useFocusEffect } from "expo-router";
+import { useFocusEffect, useRouter } from "expo-router";
 import { useCallback, useMemo, useState, useRef } from "react";
 import {
   ActivityIndicator,
@@ -25,6 +25,7 @@ import { useCommunity } from "@/hooks/useCommunity";
 import type { Group } from "@/types/group.types";
 
 export default function CommunityScreen() {
+  const router = useRouter();
   const {
     groups,
     joinedGroupIds,
@@ -232,6 +233,7 @@ export default function CommunityScreen() {
                       isOwner={group.createdBy === userId}
                       isLoading={actionLoading === group.id}
                       isLast={index === joinedGroups.length - 1}
+                      onPress={() => router.push(`/(protected)/group/${group.id}` as any)}
                       onLeave={() => confirmLeave(group)}
                       onDelete={() => confirmDelete(group)}
                     />
