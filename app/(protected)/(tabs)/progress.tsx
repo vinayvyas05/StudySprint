@@ -12,7 +12,7 @@ import { StatsGrid } from "../../../src/components/progress/StatsGrid";
 
 export default function ProgressScreen() {
   const user = useAuthStore((state) => state.user);
-  const { stats, sessions, loadProgress } = useProgressStore();
+  const { stats, sessions, loadProgress, subscribeToStats } = useProgressStore();
 
   const fadeAnim = useRef(new Animated.Value(0)).current;
   
@@ -29,7 +29,11 @@ export default function ProgressScreen() {
 
   useEffect(() => {
     if (!user?.uid) return;
+    
     loadProgress(user.uid);
+    const unsubscribe = subscribeToStats(user.uid);
+    
+    return () => unsubscribe();
   }, [user?.uid]);
 
   const [refreshing, setRefreshing] = useState(false);

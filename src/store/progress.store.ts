@@ -4,6 +4,8 @@ import {
   getUserStats,
   getUserSessions,
 } from "@/services/progress.service";
+import { doc, onSnapshot } from "firebase/firestore";
+import { db } from "@/config/firebase";
 
 interface ProgressState {
   stats: any;
@@ -12,6 +14,7 @@ interface ProgressState {
   loading: boolean;
 
   loadProgress: (uid: string) => Promise<void>;
+  subscribeToStats: (uid: string) => () => void;
 }
 
 export const useProgressStore = create<ProgressState>((set) => ({
@@ -36,5 +39,15 @@ export const useProgressStore = create<ProgressState>((set) => ({
     } finally {
       set({ loading: false });
     }
+  },
+
+  subscribeToStats: (uid) => {
+    const userRef = doc(db, "users", uid);
+    const unsubscribe = onSnapshot(userRef, (snapshot) => {
+      if (snapshot.exists()) {
+        set({ stats: snapshot.data() });
+      }
+    });
+    return unsubscribe;
   },
 }));
