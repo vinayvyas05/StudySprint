@@ -1,5 +1,5 @@
 import { db } from "@/config/firebase";
-import { doc, addDoc, collection, updateDoc, increment, getDoc } from "firebase/firestore";
+import { doc, addDoc, collection, updateDoc, increment, getDoc, FieldValue } from "firebase/firestore";
 import { Session } from "@/types/session.types";
 import { updateActiveBattlesProgress } from "./battle.service";
 import { UserProfile } from "@/types/user.types";
@@ -29,7 +29,7 @@ export const updateUserStats = async (
   // 2. Track raw stats
   const maxSession = Math.max(userData.maxSessionMinutes || 0, minutes);
 
-  const updates: Partial<UserProfile> & Record<string, any> = {
+  const updates: { [K in keyof UserProfile]?: UserProfile[K] | FieldValue } = {
     xp: increment(gainedXP),
     maxSessionMinutes: maxSession,
     totalFocusMinutes: increment(minutes),
