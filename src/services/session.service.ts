@@ -3,15 +3,8 @@ import { doc, addDoc, collection, updateDoc, increment, getDoc } from "firebase/
 import { Session } from "@/types/session.types";
 import { updateActiveBattlesProgress } from "./battle.service";
 import { UserProfile } from "@/types/user.types";
-import { 
-  calculateLevel, 
-  calculateSessionXP, 
-  getRankTitle, 
-  calculateEndurance, 
-  calculateConsistency, 
-  calculateCompetitiveness, 
-  calculateVolume 
-} from "@/utils/progression.utils";
+import { calculateSessionXP } from "@/utils/progression.utils";
+import { syncUserProgression } from "./user.service";
 
 export const createSession = async (sessionData: Session) => {
   await addDoc(collection(db, "sessions"), sessionData);
@@ -29,35 +22,21 @@ export const updateUserStats = async (
   if (!userSnap.exists()) return;
   const userData = userSnap.data() as UserProfile;
 
-  // 1. Calculate XP & Level
+  // 1. Calculate XP Gained
   const gainedXP = calculateSessionXP(minutes, isPomodoro, cyclesCompleted);
-  const newXP = (userData.xp || 0) + gainedXP;
-  const newLevel = calculateLevel(newXP);
-  const rankTitle = getRankTitle(newLevel);
 
-  // 2. Track raw stats for attributes
-  const newTotalFocus = (userData.totalFocusMinutes || 0) + minutes;
+  // 2. Track raw stats
   const maxSession = Math.max(userData.maxSessionMinutes || 0, minutes);
-  const longestStreak = userData.longestStreak || 0;
-  const battlesWon = userData.battlesWon || 0;
-
-  // 3. Recalculate RPG Attributes
-  const attributes = {
-    endurance: calculateEndurance(maxSession),
-    consistency: calculateConsistency(longestStreak),
-    competitiveness: calculateCompetitiveness(battlesWon),
-    volume: calculateVolume(newTotalFocus),
-  };
 
   await updateDoc(userRef, {
-    xp: newXP,
-    level: newLevel,
-    rankTitle,
+    xp: increment(gainedXP),
     maxSessionMinutes: maxSession,
-    attributes,
     totalFocusMinutes: increment(minutes),
     totalSessions: increment(1),
   });
+
+  // 3. Sync progression (Level, Rank, Attributes)
+  await syncUserProgression(uid);
 
   // Automatically update any active focus battles
   updateActiveBattlesProgress(uid, minutes).catch(err => {

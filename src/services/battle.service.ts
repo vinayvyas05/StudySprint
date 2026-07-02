@@ -15,6 +15,7 @@ import {
 import { Battle, BattleStatus, BattleType, SendChallengePayload } from "@/types/battle.types";
 import { UserProfile } from "@/types/user.types";
 import { calculateBattleWinXP } from "@/utils/progression.utils";
+import { syncUserProgression } from "./user.service";
 
 /**
  * Searches for users by exact email or prefix matching name.
@@ -141,6 +142,9 @@ export const updateActiveBattlesProgress = async (userId: string, minutesFocused
         xp: increment(bonusXP),
         battlesWon: increment(1)
       });
+      
+      // Sync progression immediately so they level up if applicable
+      await syncUserProgression(userId);
     }
 
     await updateDoc(doc(db, "battles", battleDoc.id), updates);

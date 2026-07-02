@@ -1,5 +1,5 @@
-import { useEffect, useCallback, useRef } from "react";
-import { ScrollView, StyleSheet, View, Text, Animated } from "react-native";
+import { useState, useEffect, useCallback, useRef } from "react";
+import { ScrollView, StyleSheet, View, Text, Animated, RefreshControl } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useFocusEffect } from "expo-router";
 
@@ -7,6 +7,7 @@ import { useAuthStore } from "@/store/auth.store";
 import { useProgressStore } from "@/store/progress.store";
 
 import { LevelCard } from "../../../src/components/progress/LevelCard";
+import { AttributesCard } from "../../../src/components/progress/AttributesCard";
 import { RecentSprints } from "../../../src/components/progress/RecentSprints";
 import { StatsGrid } from "../../../src/components/progress/StatsGrid";
 
@@ -32,6 +33,15 @@ export default function ProgressScreen() {
     loadProgress(user.uid);
   }, [user?.uid]);
 
+  const [refreshing, setRefreshing] = useState(false);
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    if (user?.uid) {
+      await loadProgress(user.uid);
+    }
+    setRefreshing(false);
+  }, [user?.uid, loadProgress]);
+
   if (!stats) {
     return null;
   }
@@ -50,8 +60,12 @@ export default function ProgressScreen() {
             {user?.name ? `${user.name.split(" ")[0]}'s Statistics` : "Your Statistics"}
           </Text>
         </View>
-        <ScrollView contentContainerStyle={styles.container}>
-          <LevelCard xp={stats.xp} level={stats.level} />
+        <ScrollView 
+          contentContainerStyle={styles.container}
+          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#FFFFFF" />}
+        >
+          <LevelCard stats={stats} />
+          <AttributesCard stats={stats} />
           <StatsGrid stats={stats} />
           <RecentSprints sessions={sessions} />
         </ScrollView>
