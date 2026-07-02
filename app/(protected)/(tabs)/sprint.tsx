@@ -214,10 +214,11 @@ export default function SprintScreen() {
   const stateRef = useRef({ isSprintActive: false, isFocusActive: false });
   stateRef.current = {
     isSprintActive:
-      isSprintRunning ||
-      timeLeft !== selectedDuration * 60 ||
-      currentCycle !== 1 ||
-      currentPhase !== "focus",
+      currentPhase !== "completed" &&
+      (isSprintRunning ||
+        timeLeft !== selectedDuration * 60 ||
+        currentCycle !== 1 ||
+        currentPhase !== "focus"),
     isFocusActive: isFocusRunning || elapsedTime > 0,
   };
 
