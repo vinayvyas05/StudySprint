@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { AppState, AppStateStatus } from "react-native";
+import { useAudioPlayer } from "expo-audio";
 
 type Phase = "focus" | "shortBreak" | "longBreak" | "completed";
 
@@ -7,6 +8,8 @@ export function usePomodoroTimer(
   selectedDuration: number,
   onComplete: () => void,
 ) {
+  const player = useAudioPlayer(require("../../assets/audio/completion.mp3"));
+
   const [timeLeft, setTimeLeft] = useState(selectedDuration * 60);
   const [isRunning, setIsRunning] = useState(false);
 
@@ -65,6 +68,9 @@ export function usePomodoroTimer(
       if (currentCycle === 4) {
         setCurrentPhase("longBreak");
         setTimeLeft(5); // for testing purpose
+        
+        // Play completion sound
+        player.play();
       } else {
         setCurrentPhase("shortBreak");
         setTimeLeft(3); // for testing purpose
