@@ -134,7 +134,7 @@ export default function SprintScreen() {
       createdAt: new Date().toISOString(),
     });
 
-    await updateUserStats(user.uid, totalFocus);
+    await updateUserStats(user.uid, totalFocus, true, TOTAL_CYCLES);
     await endActiveSession();
   }, [user, selectedDuration, endActiveSession]);
 
@@ -180,10 +180,28 @@ export default function SprintScreen() {
     beginActiveSession(480); // 8h max for open-ended focus
   }, [startFocus, beginActiveSession]);
 
-  const handleFocusStop = useCallback(() => {
+  const handleFocusStop = useCallback(async () => {
     stopFocus();
-    endActiveSession();
-  }, [stopFocus, endActiveSession]);
+    
+    // Log session if they focused for at least 1 minute
+    if (elapsedTime >= 60 && user) {
+      const minutes = Math.floor(elapsedTime / 60);
+      
+      await createSession({
+        userId: user.uid,
+        focusMinutes: minutes,
+        cyclesCompleted: 0,
+        durationType: minutes,
+        startedAt: new Date(Date.now() - elapsedTime * 1000).toISOString(),
+        completedAt: new Date().toISOString(),
+        createdAt: new Date().toISOString(),
+      });
+      
+      await updateUserStats(user.uid, minutes, false, 0);
+    }
+    
+    await endActiveSession();
+  }, [stopFocus, endActiveSession, elapsedTime, user]);
 
   const handleFocusReset = useCallback(() => {
     resetFocus();
@@ -279,12 +297,12 @@ export default function SprintScreen() {
               Productivity Focus
             </Text>
           </View>
-          <View className="bg-white/5 border border-white/10 rounded-2xl px-3 py-1 flex-row items-center gap-1.5">
+          {/* <View className="bg-white/5 border border-white/10 rounded-2xl px-3 py-1 flex-row items-center gap-1.5">
             <View className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse will-change-animation" />
             <Text className="text-slate-300 text-[10px] font-bold uppercase tracking-wider">
               Live
             </Text>
-          </View>
+          </View> */}
         </View>
 
         <ModeSelector mode={mode} onModeChange={handleModeChange} />

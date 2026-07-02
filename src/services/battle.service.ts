@@ -14,6 +14,7 @@ import {
 } from "firebase/firestore";
 import { Battle, BattleStatus, BattleType, SendChallengePayload } from "@/types/battle.types";
 import { UserProfile } from "@/types/user.types";
+import { calculateBattleWinXP } from "@/utils/progression.utils";
 
 /**
  * Searches for users by exact email or prefix matching name.
@@ -133,6 +134,13 @@ export const updateActiveBattlesProgress = async (userId: string, minutesFocused
     if (newProgress >= battle.targetValue) {
       updates.status = "completed";
       updates.winnerId = userId;
+      
+      // Grant win bonuses
+      const bonusXP = calculateBattleWinXP(battle.targetValue);
+      await updateDoc(doc(db, "users", userId), {
+        xp: increment(bonusXP),
+        battlesWon: increment(1)
+      });
     }
 
     await updateDoc(doc(db, "battles", battleDoc.id), updates);

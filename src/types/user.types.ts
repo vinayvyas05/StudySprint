@@ -5,12 +5,23 @@ export interface UserProfile {
 
   xp: number;
   level: number;
+  rankTitle?: string;
 
   currentStreak: number;
   longestStreak: number;
 
   totalFocusMinutes: number;
+  maxSessionMinutes?: number;
   totalSessions: number;
+  
+  battlesWon?: number;
+
+  attributes?: {
+    endurance: number;
+    consistency: number;
+    competitiveness: number;
+    volume: number;
+  };
 
   createdAt: string;
 }
