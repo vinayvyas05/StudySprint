@@ -41,6 +41,9 @@ const PHASE_CONFIG = {
   },
 } as const;
 
+const TOTAL_CYCLES = 4;
+const BREAK_ALLOWANCE_MINUTES = 20;
+
 export default function SprintScreen() {
   const user = useAuthStore((state) => state.user);
   const [mode, setMode] = useState<SessionMode>("sprint");
@@ -119,12 +122,12 @@ export default function SprintScreen() {
   const handleSprintComplete = useCallback(async () => {
     if (!user) return;
 
-    const totalFocus = selectedDuration * 4;
+    const totalFocus = selectedDuration * TOTAL_CYCLES;
 
     await createSession({
       userId: user.uid,
       focusMinutes: totalFocus,
-      cyclesCompleted: 4,
+      cyclesCompleted: TOTAL_CYCLES,
       durationType: selectedDuration,
       startedAt: new Date().toISOString(),
       completedAt: new Date().toISOString(),
@@ -156,9 +159,9 @@ export default function SprintScreen() {
   // ─── Wrapped sprint handlers ──────────────────────────────────
   const handleSprintStart = useCallback(() => {
     startSprint();
-    // Set expiration to cover all 4 cycles and breaks (approx)
+    // Set expiration to cover all cycles and breaks
     // It will be explicitly cleared by handleSprintComplete when finished.
-    beginActiveSession(selectedDuration * 4 + 20);
+    beginActiveSession(selectedDuration * TOTAL_CYCLES + BREAK_ALLOWANCE_MINUTES);
   }, [startSprint, beginActiveSession, selectedDuration]);
 
   const handleSprintPause = useCallback(() => {
@@ -231,7 +234,7 @@ export default function SprintScreen() {
   const phaseIndicators = useMemo(() => {
     return (
       <View className="flex-row items-center justify-center gap-3 w-full px-12">
-        {[1, 2, 3, 4].map((c) => {
+        {Array.from({ length: TOTAL_CYCLES }, (_, i) => i + 1).map((c) => {
           const isCompleted = c < currentCycle;
           const isActive = c === currentCycle;
 

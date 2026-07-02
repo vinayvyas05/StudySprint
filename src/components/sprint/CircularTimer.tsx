@@ -8,7 +8,7 @@ interface Props {
   phaseLabel: string;
   isRunning: boolean;
 }
-export default React.memo(function CircularTimer({ timeLeft, phaseColor, phaseLabel, isRunning }: Props) {
+export default function CircularTimer({ timeLeft, phaseColor, phaseLabel, isRunning }: Props) {
   const minutes = Math.floor(timeLeft / 60);
   const seconds = timeLeft % 60;
 
@@ -52,4 +52,4 @@ export default React.memo(function CircularTimer({ timeLeft, phaseColor, phaseLa
       </View>
     </View>
   );
-});
+}

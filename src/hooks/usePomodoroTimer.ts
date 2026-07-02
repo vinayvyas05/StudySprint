@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { AppState, AppStateStatus } from "react-native";
 
 type Phase = "focus" | "shortBreak" | "longBreak" | "completed";
 
@@ -20,6 +21,24 @@ export function usePomodoroTimer(
       setTimeLeft(selectedDuration * 60);
     }
   }, [selectedDuration]);
+
+  // Handle app backgrounding
+  const backgroundTimeRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    const subscription = AppState.addEventListener("change", (nextAppState: AppStateStatus) => {
+      if (nextAppState.match(/inactive|background/) && isRunning) {
+        backgroundTimeRef.current = Date.now();
+      } else if (nextAppState === "active" && backgroundTimeRef.current && isRunning) {
+        const timeAway = Math.floor((Date.now() - backgroundTimeRef.current) / 1000);
+        backgroundTimeRef.current = null;
+        
+        setTimeLeft((prev) => Math.max(0, prev - timeAway));
+      }
+    });
+
+    return () => subscription.remove();
+  }, [isRunning]);
 
   // Stable timer interval: only restarts when isRunning changes
   useEffect(() => {
