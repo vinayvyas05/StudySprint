@@ -1,6 +1,7 @@
 import CircularTimer from "@/components/sprint/CircularTimer";
 import SessionSelector from "@/components/sprint/SessionSelector";
 import StartButton from "@/components/sprint/StartButton";
+import CelebrationPopup from "@/components/sprint/CelebrationPopup";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Alert, StatusBar, Text, View, Animated } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -48,6 +49,8 @@ export default function SprintScreen() {
   const user = useAuthStore((state) => state.user);
   const [mode, setMode] = useState<SessionMode>("sprint");
   const [selectedDuration, setSelectedDuration] = useState(1);
+  const [showCelebration, setShowCelebration] = useState(false);
+  const [xpGained, setXpGained] = useState(0);
 
   const fadeAnim = useRef(new Animated.Value(0)).current;
   
@@ -136,6 +139,11 @@ export default function SprintScreen() {
 
     await updateUserStats(user.uid, totalFocus, true, TOTAL_CYCLES);
     await endActiveSession();
+    
+    // Show celebration popup
+    const xp = totalFocus + (TOTAL_CYCLES * 15);
+    setXpGained(xp);
+    setShowCelebration(true);
   }, [user, selectedDuration, endActiveSession]);
 
   // 🔥 Timer logic moved to hook
@@ -362,6 +370,12 @@ export default function SprintScreen() {
           />
         </View>
       </Animated.View>
+
+      <CelebrationPopup 
+        visible={showCelebration} 
+        xpGained={xpGained}
+        onClose={() => setShowCelebration(false)}
+      />
     </SafeAreaView>
   );
 }

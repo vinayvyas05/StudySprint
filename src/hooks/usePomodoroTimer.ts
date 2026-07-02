@@ -69,8 +69,15 @@ export function usePomodoroTimer(
         setCurrentPhase("longBreak");
         setTimeLeft(5); // for testing purpose
         
-        // Play completion sound
+        // Play completion sound (rewind first in case it was already played)
+        player.seekTo(0);
         player.play();
+
+        // Trigger completion logic and celebration popup before long break starts
+        if (!hasCompletedRef.current) {
+          hasCompletedRef.current = true;
+          onComplete();
+        }
       } else {
         setCurrentPhase("shortBreak");
         setTimeLeft(3); // for testing purpose
@@ -87,12 +94,7 @@ export function usePomodoroTimer(
     // sprint complete
     else if (currentPhase === "longBreak") {
       setIsRunning(false);
-
-      if (!hasCompletedRef.current) {
-        hasCompletedRef.current = true;
-        onComplete();
-        setCurrentPhase("completed");
-      }
+      setCurrentPhase("completed");
     }
   }, [timeLeft, currentPhase, currentCycle, selectedDuration, onComplete]);
 
