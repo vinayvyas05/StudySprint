@@ -5,6 +5,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useAuthStore } from "@/store/auth.store";
 import { useBattles } from "@/hooks/useBattles";
 import { acceptChallenge, declineChallenge } from "@/services/battle.service";
+import NewChallengeModal from "@/components/battles/NewChallengeModal";
 
 export default function BattlesScreen() {
   const user = useAuthStore((state) => state.user);
@@ -169,6 +170,12 @@ export default function BattlesScreen() {
 
         </ScrollView>
       )}
+
+      {/* ── New Challenge Modal ── */}
+      <NewChallengeModal
+        visible={modalVisible}
+        onClose={() => setModalVisible(false)}
+      />
     </SafeAreaView>
   );
 }
