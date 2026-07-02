@@ -11,6 +11,7 @@ type JoinedRowProps = {
   isLoading: boolean;
   onLeave: () => void;
   onDelete: () => void;
+  onPress: () => void;
   isLast: boolean;
 };
 
@@ -23,11 +24,13 @@ export function JoinedGroupRow({
   isLoading,
   onLeave,
   onDelete,
+  onPress,
 }: JoinedRowProps) {
   return (
     <TouchableOpacity
       activeOpacity={0.7}
-      onPress={isOwner ? onDelete : onLeave} // Simple action trigger for now
+      onPress={onPress}
+      onLongPress={isOwner ? onDelete : onLeave}
       className="bg-[#161616] rounded-[24px] p-5 mb-4 w-full"
     >
       <View className="flex-row items-center justify-between mb-4">
