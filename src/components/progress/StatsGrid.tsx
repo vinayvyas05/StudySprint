@@ -16,7 +16,7 @@ export function StatsGrid({ stats }: any) {
       />
       <StatCard
         title="Current Streak"
-        value={stats.currentStreak}
+        value={stats.currentStreak || 0}
         icon="fire"
       />
       <StatCard
