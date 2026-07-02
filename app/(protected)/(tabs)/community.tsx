@@ -136,16 +136,21 @@ export default function CommunityScreen() {
         <Animated.View style={[{ flex: 1, opacity: fadeAnim }]}>
         {/* ── Page Header ── */}
         <View className="flex-row items-center justify-between px-6 pt-10 pb-6">
-          <Text className="text-white text-xl font-bold tracking-tight">
-            Focus Groups
-          </Text>
-          <TouchableOpacity
+          <View>
+            <Text className="text-white text-3xl font-extrabold tracking-tight">
+              Focus Halls
+            </Text>
+            <Text className="text-neutral-400 text-[10px] tracking-widest uppercase mt-0.5 font-bold">
+              Study Together
+            </Text>
+          </View>
+          {/* <TouchableOpacity
             className="flex-row items-center gap-2 px-4 py-2 rounded-full bg-white/[0.06]"
             activeOpacity={0.7}
           >
             <Ionicons name="chatbubble-ellipses-outline" size={16} color="#A1A1AA" />
             <Text className="text-[#A1A1AA] text-[14px] font-medium">Help</Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
         </View>
 
         {/* ── Search ── */}
@@ -153,7 +158,7 @@ export default function CommunityScreen() {
           <Ionicons name="search" size={18} color="#52525B" />
           <TextInput
             className="flex-1 text-white text-[15px]"
-            placeholder="Search groups..."
+            placeholder="Search halls..."
             placeholderTextColor="#52525B"
             value={search}
             onChangeText={setSearch}
@@ -201,11 +206,11 @@ export default function CommunityScreen() {
             <View className="mb-8">
               <View className="flex-row items-center justify-between mb-4">
                 <Text className="text-white text-[18px] font-bold">
-                  Your groups
+                  Your halls
                 </Text>
                 <TouchableOpacity onPress={() => setModalVisible(true)}>
-                  <Text className="text-[#4ADE80] text-[15px] font-medium">
-                    + Create Group
+                  <Text className="text-white text-[15px] font-medium">
+                    + Create Hall
                   </Text>
                 </TouchableOpacity>
               </View>
@@ -215,8 +220,8 @@ export default function CommunityScreen() {
                   <EmptyState
                     message={
                       search
-                        ? "No joined groups match your search"
-                        : "You haven't joined any groups yet"
+                        ? "No joined halls match your search"
+                        : "You haven't joined any halls yet"
                     }
                     icon="people-outline"
                   />
@@ -246,10 +251,10 @@ export default function CommunityScreen() {
             <View>
               <View className="flex-row items-center justify-between mb-4">
                 <Text className="text-white text-[18px] font-bold">
-                  Suggested groups
+                  Suggested halls
                 </Text>
                 <TouchableOpacity>
-                  <Text className="text-[#4ADE80] text-[15px] font-medium">
+                  <Text className="text-white text-[15px] font-medium">
                     View all
                   </Text>
                 </TouchableOpacity>
@@ -260,8 +265,8 @@ export default function CommunityScreen() {
                   <EmptyState
                     message={
                       search
-                        ? "No groups match your search"
-                        : "All groups have been joined — create a new one!"
+                        ? "No halls match your search"
+                        : "All halls have been joined — create a new one!"
                     }
                     icon={search ? "search-outline" : "telescope-outline"}
                   />

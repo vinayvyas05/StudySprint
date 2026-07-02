@@ -52,13 +52,16 @@ export function AttributesCard({ stats }: Props) {
   };
 
   return (
-    <View className="bg-[#1A1A1C] border border-white/[0.05] rounded-[32px] p-7 mb-2">
-      <Text className="text-[#A1A1AA] text-[11px] font-bold tracking-widest uppercase mb-7 px-1">Performance Attributes</Text>
-      
+    <View className="mt-2 mb-2">
+      <Text className="text-white text-[19px] font-extrabold tracking-tight mb-4 ml-1">
+        Performance Attributes
+      </Text>
+      <View className="bg-[#1A1A1C] border border-white/[0.05] rounded-[32px] p-7">
       <AttributeBar label="Endurance" score={attrs.endurance} icon="battery-charging" color="#10B981" />
       <AttributeBar label="Consistency" score={attrs.consistency} icon="calendar" color="#3B82F6" />
       <AttributeBar label="Competitiveness" score={attrs.competitiveness} icon="trophy" color="#F59E0B" />
       <AttributeBar label="Volume" score={attrs.volume} icon="bar-chart" color="#8B5CF6" />
+      </View>
     </View>
   );
 }

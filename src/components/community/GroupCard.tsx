@@ -37,8 +37,8 @@ export function JoinedGroupRow({
         {/* Left side: Icon + Title/Members */}
         <View className="flex-row items-center gap-4 flex-1">
            {/* Big Icon Placeholder */}
-           <View className="w-14 h-14 rounded-full bg-[#1A3622] items-center justify-center">
-             <Ionicons name="hourglass" size={24} color="#4ADE80" />
+           <View className="w-14 h-14 rounded-full bg-white/[0.06] items-center justify-center">
+             <Ionicons name="hourglass" size={24} color="#FFFFFF" />
            </View>
            <View className="flex-1 pr-4">
              <Text className="text-white text-[17px] font-bold" numberOfLines={1}>{name}</Text>
@@ -54,7 +54,7 @@ export function JoinedGroupRow({
       
       {/* Bottom: Focusing */}
       <View className="flex-row items-center justify-center gap-2 border-t border-white/[0.04] pt-4">
-         <View className="w-2 h-2 rounded-full bg-[#4ADE80]" />
+         <View className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
          <Text className="text-white text-[13px] font-medium">{focusingCount} focusing now</Text>
       </View>
     </TouchableOpacity>
@@ -82,8 +82,8 @@ export function SuggestedGroupRow({
   return (
     <View className="bg-[#161616] rounded-[24px] p-5 mb-4 w-full flex-row items-center justify-between">
       <View className="flex-row items-center gap-4 flex-1 pr-4">
-        <View className="w-14 h-14 rounded-full bg-[#3F111B] items-center justify-center">
-           <Ionicons name="school" size={24} color="#FDA4AF" />
+        <View className="w-14 h-14 rounded-full bg-white/[0.06] items-center justify-center">
+           <Ionicons name="school" size={24} color="#FFFFFF" />
         </View>
         <View className="flex-1">
            <Text className="text-white text-[16px] font-bold" numberOfLines={1}>{name}</Text>
