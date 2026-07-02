@@ -9,6 +9,7 @@ export interface UserProfile {
 
   currentStreak: number;
   longestStreak: number;
+  lastActiveDate?: string; // YYYY-MM-DD
 
   totalFocusMinutes: number;
   maxSessionMinutes?: number;

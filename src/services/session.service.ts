@@ -5,6 +5,7 @@ import { updateActiveBattlesProgress } from "./battle.service";
 import { UserProfile } from "@/types/user.types";
 import { calculateSessionXP } from "@/utils/progression.utils";
 import { syncUserProgression } from "./user.service";
+import { calculateNewStreakAsync } from "@/utils/streak.utils";
 
 export const createSession = async (sessionData: Session) => {
   await addDoc(collection(db, "sessions"), sessionData);
@@ -28,14 +29,34 @@ export const updateUserStats = async (
   // 2. Track raw stats
   const maxSession = Math.max(userData.maxSessionMinutes || 0, minutes);
 
-  await updateDoc(userRef, {
+  const updates: Partial<UserProfile> & Record<string, any> = {
     xp: increment(gainedXP),
     maxSessionMinutes: maxSession,
     totalFocusMinutes: increment(minutes),
     totalSessions: increment(1),
-  });
+  };
 
-  // 3. Sync progression (Level, Rank, Attributes)
+  // 3. Streak Logic (Requires at least 2 minutes of focus)
+  if (minutes >= 2) {
+    const { newStreak, isNewDay, todayStr } = await calculateNewStreakAsync(
+      userData.lastActiveDate,
+      userData.currentStreak || 0
+    );
+
+    if (isNewDay) {
+      updates.currentStreak = newStreak;
+      updates.lastActiveDate = todayStr;
+      
+      const currentLongest = userData.longestStreak || 0;
+      if (newStreak > currentLongest) {
+        updates.longestStreak = newStreak;
+      }
+    }
+  }
+
+  await updateDoc(userRef, updates);
+
+  // 4. Sync progression (Level, Rank, Attributes)
   await syncUserProgression(uid);
 
   // Automatically update any active focus battles
