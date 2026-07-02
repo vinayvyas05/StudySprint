@@ -9,20 +9,31 @@ import NewChallengeModal from "@/components/battles/NewChallengeModal";
 
 export default function BattlesScreen() {
   const user = useAuthStore((state) => state.user);
-  const { activeBattles, pendingBattles, loading } = useBattles(user?.uid);
+  const { activeBattles, pendingBattles, completedBattles, loading } = useBattles(user?.uid);
 
   // Modal State will go here later
   const [modalVisible, setModalVisible] = useState(false);
+  const [processingIds, setProcessingIds] = useState<string[]>([]);
 
   const pendingReceived = pendingBattles.filter(b => b.opponentId === user?.uid);
   const pendingSent = pendingBattles.filter(b => b.challengerId === user?.uid);
 
   const handleAccept = async (id: string) => {
-    await acceptChallenge(id);
+    setProcessingIds(prev => [...prev, id]);
+    try {
+      await acceptChallenge(id);
+    } finally {
+      setProcessingIds(prev => prev.filter(pId => pId !== id));
+    }
   };
   
   const handleDecline = async (id: string) => {
-    await declineChallenge(id);
+    setProcessingIds(prev => [...prev, id]);
+    try {
+      await declineChallenge(id);
+    } finally {
+      setProcessingIds(prev => prev.filter(pId => pId !== id));
+    }
   };
 
   return (
@@ -69,17 +80,27 @@ export default function BattlesScreen() {
                    <View className="flex-row items-center gap-3">
                      <TouchableOpacity 
                        onPress={() => handleAccept(battle.id)} 
-                       className="flex-1 bg-white py-3.5 rounded-2xl items-center"
+                       className={`flex-1 bg-white py-3.5 rounded-2xl items-center ${processingIds.includes(battle.id) ? "opacity-50" : ""}`}
                        activeOpacity={0.8}
+                       disabled={processingIds.includes(battle.id)}
                      >
-                       <Text className="text-black font-extrabold tracking-tight">Accept</Text>
+                       {processingIds.includes(battle.id) ? (
+                         <ActivityIndicator size="small" color="#000" />
+                       ) : (
+                         <Text className="text-black font-extrabold tracking-tight">Accept</Text>
+                       )}
                      </TouchableOpacity>
                      <TouchableOpacity 
                        onPress={() => handleDecline(battle.id)} 
-                       className="flex-1 bg-white/10 py-3.5 rounded-2xl items-center border border-white/10"
+                       className={`flex-1 bg-white/10 py-3.5 rounded-2xl items-center border border-white/10 ${processingIds.includes(battle.id) ? "opacity-50" : ""}`}
                        activeOpacity={0.8}
+                       disabled={processingIds.includes(battle.id)}
                      >
-                       <Text className="text-white font-extrabold tracking-tight">Decline</Text>
+                       {processingIds.includes(battle.id) ? (
+                         <ActivityIndicator size="small" color="#FFF" />
+                       ) : (
+                         <Text className="text-white font-extrabold tracking-tight">Decline</Text>
+                       )}
                      </TouchableOpacity>
                    </View>
                  </View>
@@ -166,6 +187,39 @@ export default function BattlesScreen() {
                 </View>
               )
             })
+          )}
+
+          {/* Battle History */}
+          {completedBattles.length > 0 && (
+             <View className="mt-8">
+               <Text className="text-[#A1A1AA] text-[11px] font-bold uppercase tracking-wider mb-4 pl-2">Battle History</Text>
+               {completedBattles.map(battle => {
+                 const isChallenger = battle.challengerId === user?.uid;
+                 const opponentName = isChallenger ? battle.opponentName : battle.challengerName;
+                 const isWinner = battle.winnerId === user?.uid;
+                 const isTieOrDeclined = battle.status === "declined";
+                 
+                 return (
+                   <View key={battle.id} className="bg-[#1A1A1C] border border-white/[0.03] rounded-[24px] p-5 mb-4 flex-row items-center justify-between">
+                     <View>
+                       <Text className="text-white font-bold text-lg tracking-tight">{opponentName}</Text>
+                       <Text className="text-[#71717A] text-sm mt-0.5 capitalize">{battle.type.replace('_', ' ')} • {battle.targetValue}m</Text>
+                     </View>
+                     <View className={`px-4 py-1.5 rounded-full ${
+                       isTieOrDeclined ? "bg-white/[0.05]" :
+                       isWinner ? "bg-emerald-500/10" : "bg-red-500/10"
+                     }`}>
+                       <Text className={`text-xs font-bold ${
+                         isTieOrDeclined ? "text-[#A1A1AA]" :
+                         isWinner ? "text-emerald-500" : "text-red-500"
+                       }`}>
+                         {isTieOrDeclined ? "Declined" : isWinner ? "Victory" : "Defeat"}
+                       </Text>
+                     </View>
+                   </View>
+                 )
+               })}
+             </View>
           )}
 
         </ScrollView>

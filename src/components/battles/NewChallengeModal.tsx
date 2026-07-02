@@ -60,19 +60,27 @@ export default function NewChallengeModal({ visible, onClose }: Props) {
     }
   }, [visible]);
 
-  const handleSearch = async () => {
-    if (!searchQuery.trim()) return;
-    setIsSearching(true);
-    try {
-      const results = await searchUsers(searchQuery);
-      // Filter out self
-      setSearchResults(results.filter(u => u.uid !== user?.uid));
-    } catch (err) {
-      console.error("Search failed:", err);
-    } finally {
-      setIsSearching(false);
+  useEffect(() => {
+    if (!searchQuery.trim()) {
+      setSearchResults([]);
+      return;
     }
-  };
+
+    const timer = setTimeout(async () => {
+      setIsSearching(true);
+      try {
+        const results = await searchUsers(searchQuery);
+        // Filter out self
+        setSearchResults(results.filter(u => u.uid !== user?.uid));
+      } catch (err) {
+        console.error("Search failed:", err);
+      } finally {
+        setIsSearching(false);
+      }
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [searchQuery, user]);
 
   const handleSendChallenge = async () => {
     if (!user || !opponent) return;
@@ -108,7 +116,11 @@ export default function NewChallengeModal({ visible, onClose }: Props) {
       <View className="flex-1 justify-end" style={{ backgroundColor: "rgba(0, 0, 0, 0.75)" }}>
         <TouchableOpacity style={{ flex: 1 }} activeOpacity={1} onPress={onClose} />
         
-        <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : undefined} className="justify-end">
+        <KeyboardAvoidingView 
+          behavior={Platform.OS === "ios" ? "padding" : "height"} 
+          keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 24}
+          className="justify-end"
+        >
           <View
             className="rounded-t-[36px] px-8 pt-4 border-t border-white/[0.06]"
             style={{ backgroundColor: "#121212", maxHeight: SCREEN_HEIGHT * 0.78, minHeight: SCREEN_HEIGHT * 0.6 }}
@@ -128,28 +140,23 @@ export default function NewChallengeModal({ visible, onClose }: Props) {
             <View className="flex-1">
               {step === 1 && (
                 <View className="flex-1">
-                  <View className="flex-row items-center gap-3 mb-6">
+                  <View className="flex-row items-center gap-3 mb-6 relative">
                     <TextInput
                       className="flex-1 bg-[#1A1A1C] border border-white/[0.07] rounded-[20px] text-white text-[16px] font-semibold px-5 py-4"
                       placeholder="Search by name or email..."
                       placeholderTextColor="#52525B"
                       value={searchQuery}
                       onChangeText={setSearchQuery}
-                      onSubmitEditing={handleSearch}
                       autoCapitalize="none"
                       autoCorrect={false}
                     />
-                    <TouchableOpacity 
-                      onPress={handleSearch}
-                      className="bg-white w-14 h-14 rounded-[20px] items-center justify-center"
-                      activeOpacity={0.8}
-                    >
+                    <View className="absolute right-5">
                       {isSearching ? (
-                        <ActivityIndicator size="small" color="#000" />
+                        <ActivityIndicator size="small" color="#52525B" />
                       ) : (
-                        <Ionicons name="search" size={20} color="#000" />
+                        <Ionicons name="search" size={20} color="#52525B" />
                       )}
-                    </TouchableOpacity>
+                    </View>
                   </View>
 
                   <FlatList
